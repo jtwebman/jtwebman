@@ -1,0 +1,32 @@
+---
+import { type CollectionEntry, getCollection } from 'astro:content';
+import BlogLayout from '../../layouts/BlogLayout.astro';
+import { getReadingTimeFromMarkdown } from '../../utils/reading-time';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({
+    params: { slug: post.slug },
+    props: post,
+  }));
+}
+
+type Props = CollectionEntry<'blog'>;
+
+const post = Astro.props;
+const { Content } = await post.render();
+const readingTime = getReadingTimeFromMarkdown(post.body);
+---
+
+<BlogLayout
+  title={post.data.title}
+  description={post.data.description}
+  pubDate={post.data.pubDate}
+  updatedDate={post.data.updatedDate}
+  heroImage={post.data.heroImage}
+  category={post.data.category}
+  tags={post.data.tags}
+  readingTime={readingTime.text}
+>
+  <Content />
+</BlogLayout>

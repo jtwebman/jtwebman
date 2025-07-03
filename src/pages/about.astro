@@ -1,0 +1,272 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { siteConfig } from '../config/site';
+import { generatePersonStructuredData } from '../utils/structured-data';
+
+const structuredData = generatePersonStructuredData();
+---
+
+<BaseLayout
+  title="About - JT Turner"
+  description="Learn more about JT Turner, a software engineer with 25+ years of experience"
+  structuredData={structuredData}
+>
+  <div class="flex flex-col min-h-screen">
+    <Header />
+
+    <main class="flex-grow bg-gray-50 dark:bg-gray-900">
+      <section class="container mx-auto px-4 py-12 lg:py-20">
+        <div class="max-w-4xl mx-auto">
+          <!-- Header Section -->
+          <div class="text-center mb-16">
+            <img
+              src={siteConfig.author.avatar}
+              alt={siteConfig.author.name}
+              class="w-32 h-32 rounded-full mx-auto mb-6 border-4 border-gray-200 dark:border-gray-700 shadow-lg"
+            />
+            <h1 class="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+              About Me
+            </h1>
+            <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              Software Engineer with 25+ years of experience building things I would love to see in
+              the world
+            </p>
+          </div>
+
+          <!-- Content Grid -->
+          <div class="grid lg:grid-cols-3 gap-12 mb-16">
+            <div class="lg:col-span-2">
+              <div
+                class="bg-white dark:bg-gray-800 rounded-lg p-8 shadow-sm border border-gray-200 dark:border-gray-700"
+              >
+                <div class="space-y-8">
+                  <div>
+                    <h2
+                      class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700"
+                    >
+                      The Journey
+                    </h2>
+                    <div class="space-y-4">
+                      <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                        My programming story started in 1986 with an IBM 8088 and a curiosity that
+                        wouldn't quit. What began as a teenager tinkering with code has evolved into
+                        a 25+ year career where I've had the privilege of building systems that
+                        scale, leading teams that deliver, and mentoring engineers who've gone on to
+                        do incredible things.
+                      </p>
+
+                      <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                        Since turning professional in 1999, I've learned that software engineering
+                        isn't just about writing code—it's about solving real problems for real
+                        people. Whether it was developing custom WordPress themes for The Geekie
+                        Awards, creating open-source plugins like Bookshelf-scopes to make database
+                        querying easier, or architecting scalable solutions at HARMAN International,
+                        each project taught me something new about both technology and leadership.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h2
+                      class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700"
+                    >
+                      Engineering Leadership
+                    </h2>
+                    <div class="space-y-4">
+                      <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                        As an Engineering Manager and now Principal Software Engineer at HARMAN
+                        International, I've discovered that the best technical solutions come from
+                        understanding both the code and the people writing it. I'm known for
+                        breaking down complex projects into impactful, customer-value goals and
+                        providing realistic timelines that actually work— something my teams
+                        appreciate when deadlines are tight and stakeholders are watching.
+                      </p>
+
+                      <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                        I stay highly involved in day-to-day technical work because I believe you
+                        can't lead what you don't understand. Whether we're building with Node.js
+                        and PostgreSQL, React and React Native, or exploring new technologies, I'm
+                        right there with my team, sleeves rolled up, working through the problems
+                        together.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h2
+                      class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700"
+                    >
+                      Technical Evolution
+                    </h2>
+                    <div class="space-y-4">
+                      <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                        Over the years, I've worked with 15+ programming languages—not because I
+                        collect them like trophies, but because each one taught me a different way
+                        to think about problems. These days, I'm particularly drawn to functional
+                        programming patterns in TypeScript, finding they lead to more maintainable
+                        code and fewer bugs in production.
+                      </p>
+
+                      <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                        My technical certifications (SQL Pro, JavaScript, Problem Solving, OpenStack
+                        Essentials) reflect my commitment to continuous learning, but the real
+                        education comes from building systems that need to work under pressure,
+                        scale with growth, and be maintained by teams that change over time.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h2
+                      class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700"
+                    >
+                      Current Adventures
+                    </h2>
+                    <div class="space-y-4">
+                      <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                        These days, you'll find me working on two very different but equally
+                        exciting projects. First, I'm building Roblox games with my daughter—there's
+                        something magical about sharing the joy of creating with the next
+                        generation. Our latest game, Fire Storm, has been a fantastic
+                        father-daughter coding adventure.
+                      </p>
+
+                      <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                        I'm also deep into building AI-powered starter repositories, exploring how
+                        we can use intelligent tools to help developers bootstrap projects faster
+                        and better. It's the kind of work that gets me excited about the future of
+                        software development—not replacing developers, but making us all more
+                        effective.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h2
+                      class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700"
+                    >
+                      Why This Matters
+                    </h2>
+                    <div class="space-y-4">
+                      <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                        After 25+ years in this industry, I've learned that the best engineers
+                        aren't just great at solving technical problems—they're great at solving
+                        human problems with technology. They mentor junior developers, communicate
+                        clearly with stakeholders, and build systems that their future selves (and
+                        teammates) will thank them for.
+                      </p>
+
+                      <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                        If you're an engineering manager looking for someone who can bridge the gap
+                        between technical excellence and team leadership, or a developer who wants
+                        to connect with someone who's been through the trenches and emerged with
+                        stories to tell, I'd love to hear from you.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+              <div class="space-y-8">
+                <!-- Quick Stats -->
+                <div
+                  class="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-sm"
+                >
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    Quick Stats
+                  </h3>
+                  <dl class="space-y-3">
+                    <div>
+                      <dt class="text-sm text-gray-600 dark:text-gray-400">Experience</dt>
+                      <dd class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                        25+ Years
+                      </dd>
+                    </div>
+                    <div>
+                      <dt class="text-sm text-gray-600 dark:text-gray-400">Role</dt>
+                      <dd class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                        Principal Engineer
+                      </dd>
+                    </div>
+                    <div>
+                      <dt class="text-sm text-gray-600 dark:text-gray-400">Leadership</dt>
+                      <dd class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                        Engineering Manager
+                      </dd>
+                    </div>
+                    <div>
+                      <dt class="text-sm text-gray-600 dark:text-gray-400">Languages</dt>
+                      <dd class="text-lg font-semibold text-gray-900 dark:text-gray-100">15+</dd>
+                    </div>
+                  </dl>
+                </div>
+
+                <!-- Current Tools -->
+                <div
+                  class="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-sm"
+                >
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    Tech Stack
+                  </h3>
+                  <ul class="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+                    <li>• Node.js & PostgreSQL</li>
+                    <li>• React & React Native</li>
+                    <li>• TypeScript (functional patterns)</li>
+                    <li>• Roblox Studio & Lua</li>
+                    <li>• AI-powered development tools</li>
+                  </ul>
+                </div>
+
+                <!-- Social Links -->
+                <div
+                  class="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700 shadow-sm"
+                >
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    Connect
+                  </h3>
+                  <div class="space-y-2">
+                    <a
+                      href={siteConfig.social.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="block text-blue-600 dark:text-blue-400 hover:underline text-sm"
+                      >GitHub</a
+                    >
+                    <a
+                      href={siteConfig.social.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="block text-blue-600 dark:text-blue-400 hover:underline text-sm"
+                      >LinkedIn</a
+                    >
+                    <a
+                      href={siteConfig.social.twitter}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="block text-blue-600 dark:text-blue-400 hover:underline text-sm"
+                      >Twitter/X</a
+                    >
+                    <a
+                      href={siteConfig.social.youtube}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="block text-blue-600 dark:text-blue-400 hover:underline text-sm"
+                      >YouTube</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+  </div>
+</BaseLayout>

@@ -1,0 +1,320 @@
+---
+import { siteConfig } from '../config/site';
+---
+
+<form
+  id="contact-form"
+  class="space-y-4"
+  data-netlify="true"
+  netlify-honeypot="bot-field"
+  name="contact"
+  method="POST"
+  action={siteConfig.pages.contactSuccess}
+>
+  <input type="hidden" name="form-name" value="contact" />
+  <p class="hidden">
+    <label>
+      Don't fill this out if you're human: <input name="bot-field" />
+    </label>
+  </p>
+
+  <div>
+    <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      Name
+    </label>
+    <input
+      type="text"
+      id="name"
+      name="name"
+      required
+      minlength="2"
+      maxlength="50"
+      autocomplete="name"
+      class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
+    />
+    <div class="error-message hidden text-red-600 dark:text-red-400 text-sm mt-1" data-field="name">
+    </div>
+  </div>
+
+  <div>
+    <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      Email
+    </label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      required
+      autocomplete="email"
+      class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
+    />
+    <div
+      class="error-message hidden text-red-600 dark:text-red-400 text-sm mt-1"
+      data-field="email"
+    >
+    </div>
+  </div>
+
+  <div>
+    <label for="subject" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      Subject
+    </label>
+    <input
+      type="text"
+      id="subject"
+      name="subject"
+      required
+      minlength="5"
+      maxlength="100"
+      class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
+    />
+    <div
+      class="error-message hidden text-red-600 dark:text-red-400 text-sm mt-1"
+      data-field="subject"
+    >
+    </div>
+  </div>
+
+  <div>
+    <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      Your Question
+    </label>
+    <textarea
+      id="message"
+      name="message"
+      rows="5"
+      required
+      minlength="10"
+      maxlength="1000"
+      class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
+    ></textarea>
+    <div
+      class="error-message hidden text-red-600 dark:text-red-400 text-sm mt-1"
+      data-field="message"
+    >
+    </div>
+  </div>
+
+  <button
+    type="submit"
+    id="submit-btn"
+    class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+  >
+    <span class="submit-text">Send Message</span>
+    <span class="submit-loading hidden">Sending...</span>
+  </button>
+
+  <div
+    class="success-message hidden bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 text-green-800 dark:text-green-200"
+  >
+    <div class="flex items-center gap-2">
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          fill-rule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+          clip-rule="evenodd"></path>
+      </svg>
+      <span>Message sent successfully! I'll get back to you soon.</span>
+    </div>
+  </div>
+</form>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('contact-form') as HTMLFormElement | null;
+    const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+    const submitText = submitBtn?.querySelector('.submit-text') as HTMLElement | null;
+    const submitLoading = submitBtn?.querySelector('.submit-loading') as HTMLElement | null;
+    const successMessage = document.querySelector('.success-message') as HTMLElement | null;
+
+    // Validation rules
+    interface ValidationRule {
+      required: boolean;
+      minLength?: number;
+      maxLength?: number;
+      pattern?: RegExp;
+      message: string;
+    }
+
+    const validationRules: Record<string, ValidationRule> = {
+      name: {
+        required: true,
+        minLength: 2,
+        maxLength: 50,
+        message: 'Name must be between 2 and 50 characters',
+      },
+      email: {
+        required: true,
+        pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        message: 'Please enter a valid email address',
+      },
+      subject: {
+        required: true,
+        minLength: 5,
+        maxLength: 100,
+        message: 'Subject must be between 5 and 100 characters',
+      },
+      message: {
+        required: true,
+        minLength: 10,
+        maxLength: 1000,
+        message: 'Message must be between 10 and 1000 characters',
+      },
+    };
+
+    // Validate field
+    function validateField(fieldName: string, value: string): boolean {
+      const rules = validationRules[fieldName];
+      const errorDiv = document.querySelector(`[data-field="${fieldName}"]`) as HTMLElement | null;
+      const field = document.getElementById(fieldName) as
+        | HTMLInputElement
+        | HTMLTextAreaElement
+        | null;
+
+      if (rules.required && !value.trim()) {
+        showError(
+          field,
+          errorDiv,
+          `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} is required`
+        );
+        return false;
+      }
+
+      if (rules.minLength && value.length < rules.minLength) {
+        showError(field, errorDiv, rules.message);
+        return false;
+      }
+
+      if (rules.maxLength && value.length > rules.maxLength) {
+        showError(field, errorDiv, rules.message);
+        return false;
+      }
+
+      if (rules.pattern && !rules.pattern.test(value)) {
+        showError(field, errorDiv, rules.message);
+        return false;
+      }
+
+      hideError(field, errorDiv);
+      return true;
+    }
+
+    // Show error
+    function showError(
+      field: HTMLElement | null,
+      errorDiv: HTMLElement | null,
+      message: string
+    ): void {
+      if (field) {
+        field.classList.add('border-red-500');
+        field.classList.remove('border-gray-300', 'dark:border-gray-600');
+      }
+      if (errorDiv) {
+        errorDiv.textContent = message;
+        errorDiv.classList.remove('hidden');
+      }
+    }
+
+    // Hide error
+    function hideError(field: HTMLElement | null, errorDiv: HTMLElement | null): void {
+      if (field) {
+        field.classList.remove('border-red-500');
+        field.classList.add('border-gray-300', 'dark:border-gray-600');
+      }
+      if (errorDiv) {
+        errorDiv.classList.add('hidden');
+      }
+    }
+
+    // Real-time validation
+    Object.keys(validationRules).forEach(fieldName => {
+      const field = document.getElementById(fieldName) as
+        | HTMLInputElement
+        | HTMLTextAreaElement
+        | null;
+      if (field) {
+        field.addEventListener('blur', () => {
+          validateField(fieldName, field.value);
+        });
+
+        field.addEventListener('input', () => {
+          // Clear error on input if field was previously invalid
+          const errorDiv = document.querySelector(
+            `[data-field="${fieldName}"]`
+          ) as HTMLElement | null;
+          if (errorDiv && !errorDiv.classList.contains('hidden')) {
+            validateField(fieldName, field.value);
+          }
+        });
+      }
+    });
+
+    // Form submission
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // Validate all fields
+        let isValid = true;
+        const formData = new FormData(form);
+
+        Object.keys(validationRules).forEach(fieldName => {
+          const value = formData.get(fieldName) || '';
+          if (!validateField(fieldName, value.toString())) {
+            isValid = false;
+          }
+        });
+
+        if (!isValid) {
+          return;
+        }
+
+        // Show loading state
+        if (submitBtn) {
+          submitBtn.disabled = true;
+        }
+        if (submitText) {
+          submitText.classList.add('hidden');
+        }
+        if (submitLoading) {
+          submitLoading.classList.remove('hidden');
+        }
+
+        // Submit form
+        fetch(form.action, {
+          method: 'POST',
+          body: formData,
+        })
+          .then(response => {
+            if (response.ok) {
+              // Show success message
+              if (form) {
+                form.style.display = 'none';
+              }
+              if (successMessage) {
+                successMessage.classList.remove('hidden');
+              }
+            } else {
+              throw new Error('Form submission failed');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('There was an error sending your message. Please try again.');
+          })
+          .finally(() => {
+            // Reset loading state
+            if (submitBtn) {
+              submitBtn.disabled = false;
+            }
+            if (submitText) {
+              submitText.classList.remove('hidden');
+            }
+            if (submitLoading) {
+              submitLoading.classList.add('hidden');
+            }
+          });
+      });
+    }
+  });
+</script>

@@ -1,0 +1,141 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { generateServiceStructuredData } from '../utils/structured-data';
+
+const structuredData = generateServiceStructuredData();
+---
+
+<BaseLayout
+  title="Services - JT Turner"
+  description="Professional services and tools offered by JT Turner"
+  structuredData={structuredData}
+>
+  <div class="flex flex-col min-h-screen">
+    <Header />
+
+    <main class="flex-grow bg-gray-50 dark:bg-gray-900">
+      <section class="container mx-auto px-4 py-16">
+        <div class="max-w-4xl mx-auto">
+          <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-8">
+            Services & Products
+          </h1>
+
+          <div class="space-y-12">
+            <div id="consultation" class="scroll-mt-20">
+              <div
+                class="bg-white dark:bg-gray-800 rounded-lg p-8 border border-gray-200 dark:border-gray-700 shadow-sm"
+              >
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                  One Hour with a 25+ Year Software Engineer
+                </h2>
+                <div class="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-4">$100</div>
+                <p class="text-gray-700 dark:text-gray-300 mb-6">
+                  Get personalized advice and insights from someone who's been in the trenches for
+                  over two decades. Whether you're looking for career guidance, technical
+                  architecture advice, or help with a specific problem, I'm here to help.
+                </p>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                  What you'll get:
+                </h3>
+                <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-6 space-y-2">
+                  <li>Private one-on-one video consultation</li>
+                  <li>Tailored advice for your specific situation</li>
+                  <li>Honest, experienced perspective</li>
+                  <li>Actionable recommendations</li>
+                  <li>Follow-up summary of key points discussed</li>
+                </ul>
+                <a
+                  href="https://cal.com/jtwebman"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  Book Your Session
+                </a>
+              </div>
+            </div>
+
+            <div id="contact" class="scroll-mt-20">
+              <div
+                class="bg-white dark:bg-gray-800 rounded-lg p-8 border border-gray-200 dark:border-gray-700 shadow-sm"
+              >
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                  Questions & Quick Advice
+                </h2>
+                <p class="text-gray-700 dark:text-gray-300 mb-6">
+                  Have a specific question or need quick advice? Send me an email and I'll get back
+                  to you with helpful insights. For more in-depth discussions, consider booking a
+                  full consultation above.
+                </p>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                  What to expect:
+                </h3>
+                <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-6 space-y-2">
+                  <li>Thoughtful response to your question</li>
+                  <li>Honest, experienced perspective</li>
+                  <li>Actionable recommendations when possible</li>
+                  <li>Response within 1-2 business days</li>
+                </ul>
+                <a
+                  href="/contact"
+                  class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                >
+                  Send Me a Message
+                </a>
+              </div>
+            </div>
+
+            <div
+              class="bg-gray-50 dark:bg-gray-800 rounded-lg p-8 border border-gray-200 dark:border-gray-700"
+            >
+              <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+                Free Resources
+              </h2>
+              <div class="space-y-6">
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                    Windsurf Community
+                  </h3>
+                  <p class="text-gray-700 dark:text-gray-300 mb-3">
+                    Join a community for sharing software development learnings. Get 250 free
+                    credits when you sign up with my referral link.
+                  </p>
+                  <a
+                    href="https://windsurf.com/refer?referral_code=k9mix1xeuk0nvg6r"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    Join Windsurf →
+                  </a>
+                </div>
+
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                    GitHub Code Repository
+                  </h3>
+                  <p class="text-gray-700 dark:text-gray-300 mb-3">
+                    Access my open-source projects and code examples. Free for everyone to use and
+                    learn from.
+                  </p>
+                  <a
+                    href="https://github.com/jtwebman"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    View on GitHub →
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+  </div>
+</BaseLayout>

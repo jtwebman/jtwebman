@@ -1,0 +1,110 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ContactForm from '../components/ContactForm.astro';
+import { generateContactStructuredData } from '../utils/structured-data';
+
+const structuredData = generateContactStructuredData();
+---
+
+<BaseLayout
+  title="Contact - JT Turner"
+  description="Get in touch with JT Turner for questions, advice, or collaboration opportunities."
+  structuredData={structuredData}
+>
+  <div class="flex flex-col min-h-screen">
+    <Header />
+
+    <main class="flex-grow bg-gray-50 dark:bg-gray-900">
+      <section class="container mx-auto px-4 py-16">
+        <div class="max-w-2xl mx-auto">
+          <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-8">Get in Touch</h1>
+
+          <div
+            class="bg-white dark:bg-gray-800 rounded-lg p-8 border border-gray-200 dark:border-gray-700 shadow-sm mb-8"
+          >
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+              Questions & Quick Advice
+            </h2>
+            <p class="text-gray-700 dark:text-gray-300 mb-6">
+              Have a specific question or need quick advice? Send me a message and I'll get back to
+              you with helpful insights. For more in-depth discussions, consider
+              <a
+                href="/services#consultation"
+                class="text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                booking a full consultation
+              </a>.
+            </p>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
+              What to expect:
+            </h3>
+            <ul class="list-disc list-inside text-gray-700 dark:text-gray-300 mb-6 space-y-2">
+              <li>Thoughtful response to your question</li>
+              <li>Honest, experienced perspective</li>
+              <li>Actionable recommendations when possible</li>
+              <li>Response within 1-2 business days</li>
+            </ul>
+            <ContactForm />
+          </div>
+
+          <div
+            class="bg-gray-50 dark:bg-gray-800 rounded-lg p-8 border border-gray-200 dark:border-gray-700"
+          >
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+              Other Ways to Connect
+            </h2>
+            <div class="space-y-4">
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                  For Professional Inquiries
+                </h3>
+                <p class="text-gray-700 dark:text-gray-300">
+                  Connect with me on
+                  <a
+                    href="https://linkedin.com/in/jtwebman"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    LinkedIn
+                  </a>
+                  for professional discussions and networking.
+                </p>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                  Follow My Work
+                </h3>
+                <p class="text-gray-700 dark:text-gray-300">
+                  Check out my projects on
+                  <a
+                    href="https://github.com/jtwebman"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    GitHub
+                  </a>
+                  or subscribe to my
+                  <a
+                    href="https://www.youtube.com/@JTWebMan"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    YouTube channel
+                  </a>
+                  for tech content.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+  </div>
+</BaseLayout>

@@ -1,16 +1,212 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import LinkCard from '../components/LinkCard.astro';
+import BlogPostCard from '../components/BlogPostCard.astro';
+import ErrorBoundary from '../components/ErrorBoundary.astro';
+import { siteConfig } from '../config/site';
+import { generatePersonStructuredData } from '../utils/structured-data';
+import { getBlogPostsWithReadingTime, sortPostsByDate } from '../utils/blog';
 
+interface BlogPostWithReadingTime {
+  data: {
+    title: string;
+    description: string;
+    pubDate: Date;
+    category: string;
+  };
+  slug: string;
+  readingTime: string;
+}
+
+let recentPosts: BlogPostWithReadingTime[] = [];
+let blogError: Error | null = null;
+
+try {
+  const allPosts = await getBlogPostsWithReadingTime();
+  const sortedPosts = sortPostsByDate(allPosts);
+  recentPosts = sortedPosts.slice(0, 3);
+} catch (error) {
+  console.error('Error loading blog posts:', error);
+  blogError = error as Error;
+}
+
+const personStructuredData = generatePersonStructuredData();
+
+const primaryLinks = [
+  {
+    title: 'GitHub',
+    href: 'https://github.com/jtwebman',
+    description: 'Check out my open source projects and contributions',
+  },
+  {
+    title: 'Fire Storm - Roblox Game',
+    href: 'https://www.roblox.com/games/74366617218328/Fire-Storm',
+    description: 'My latest Roblox game creation',
+  },
+  {
+    title: 'LinkedIn',
+    href: 'https://linkedin.com/in/jtwebman',
+    description: 'Connect with me professionally',
+  },
+  {
+    title: '1-Hour Consultation',
+    href: '/services#consultation',
+    description: 'Book a one-on-one session with a 25+ year software engineer',
+    external: false,
+  },
+];
+
+const developerTools = [
+  {
+    title: 'GitHub',
+    href: 'https://github.com/jtwebman',
+    description: 'Open source projects and code examples',
+  },
+  {
+    title: 'AI Starter Repository',
+    href: 'https://github.com/jtwebman',
+    description: 'Bootstrap new projects faster with AI-powered tools',
+  },
+];
+
+const socialLinks = [
+  {
+    title: 'Twitter/X',
+    href: siteConfig.social.twitter,
+    description: 'Follow me for tech insights',
+  },
+  {
+    title: 'YouTube',
+    href: siteConfig.social.youtube,
+    description: 'Watch my development videos',
+  },
+  {
+    title: 'LinkedIn',
+    href: siteConfig.social.linkedin,
+    description: 'Professional network',
+  },
+  {
+    title: 'Roblox Profile',
+    href: 'https://www.roblox.com/users/2416255318/profile',
+    description: 'My Roblox creations',
+  },
+];
+
+const otherLinks = [
+  {
+    title: 'Windsurf Community',
+    href: 'https://windsurf.com/refer?referral_code=k9mix1xeuk0nvg6r',
+    description: 'Join and get 250 free credits',
+  },
+  {
+    title: 'T-Shirt Store',
+    href: 'https://www.zazzle.com/jtwebman',
+    description: 'Developer-themed merchandise',
+  },
+  {
+    title: 'Ask Me Anything',
+    href: '/services#contact',
+    description: 'Get personalized advice and answers to your questions',
+    external: false,
+  },
+];
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="JT Turner - Software Engineer" structuredData={personStructuredData}>
+  <div class="flex flex-col min-h-screen">
+    <Header />
+
+    <main class="flex-grow">
+      <section class="container mx-auto px-4 py-16">
+        <div class="max-w-4xl mx-auto text-center mb-12">
+          <img
+            src={siteConfig.author.avatar}
+            alt={siteConfig.author.name}
+            class="w-32 h-32 rounded-full mx-auto mb-6 border-4 border-gray-200 dark:border-gray-700"
+          />
+          <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+            {siteConfig.author.name}
+          </h1>
+          <p class="text-xl text-gray-700 dark:text-gray-300 mb-2">
+            Principal Software Engineer / TypeScript Functional Programming / AI Tools
+          </p>
+          <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            {siteConfig.author.bio}
+          </p>
+        </div>
+
+        <div class="max-w-4xl mx-auto space-y-12">
+          <section>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Primary Links</h2>
+            <div class="grid md:grid-cols-2 gap-4">
+              {primaryLinks.map(link => <LinkCard {...link} />)}
+            </div>
+          </section>
+
+          <section>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+              Code & Projects
+            </h2>
+            <div class="grid md:grid-cols-2 gap-4">
+              {developerTools.map(link => <LinkCard {...link} />)}
+            </div>
+          </section>
+
+          <section>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Social Media</h2>
+            <div class="grid md:grid-cols-2 gap-4">
+              {socialLinks.map(link => <LinkCard {...link} />)}
+            </div>
+          </section>
+
+          <section>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Other Links</h2>
+            <div class="grid md:grid-cols-2 gap-4">
+              {otherLinks.map(link => <LinkCard {...link} />)}
+            </div>
+          </section>
+
+          <section>
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Recent Blog Posts</h2>
+              <a href="/blog" class="text-blue-600 dark:text-blue-400 hover:underline">
+                View all posts →
+              </a>
+            </div>
+            {
+              blogError ? (
+                <ErrorBoundary
+                  title="Failed to load blog posts"
+                  message="We're having trouble loading the latest blog posts. Please try again later or visit the blog page directly."
+                  showRetry={false}
+                />
+              ) : recentPosts.length > 0 ? (
+                <div class="divide-y divide-gray-200 dark:divide-gray-800">
+                  {recentPosts.map(post => (
+                    <BlogPostCard
+                      title={post.data.title}
+                      description={post.data.description}
+                      pubDate={post.data.pubDate}
+                      slug={post.slug}
+                      category={post.data.category}
+                      readingTime={post.readingTime}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div class="text-center py-12 text-gray-500 dark:text-gray-400">
+                  <p class="text-lg mb-2">No blog posts yet</p>
+                  <p class="text-sm">Check back soon for new content!</p>
+                </div>
+              )
+            }
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+  </div>
+</BaseLayout>

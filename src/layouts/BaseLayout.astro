@@ -1,0 +1,68 @@
+---
+import '../styles/global.css';
+import { siteConfig } from '../config/site';
+import { getThemeScript } from '../utils/theme';
+import { generateWebsiteStructuredData } from '../utils/structured-data';
+
+export interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  structuredData?: object;
+}
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+const {
+  title,
+  description = siteConfig.description,
+  image = siteConfig.defaults.image,
+  structuredData,
+} = Astro.props;
+
+const websiteStructuredData = generateWebsiteStructuredData();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <link rel="canonical" href={canonicalURL} />
+
+    <title>{title}</title>
+
+    <meta property="og:title" content={title} />
+    <meta property="og:type" content="website" />
+
+    <script is:inline set:html={getThemeScript()} />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, Astro.url)} />
+
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={Astro.url} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={new URL(image, Astro.url)} />
+
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#131313" media="(prefers-color-scheme: dark)" />
+
+    <!-- Structured Data -->
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(websiteStructuredData)} />
+    {
+      structuredData && (
+        <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+      )
+    }
+  </head>
+  <body class="min-h-screen bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+    <slot />
+  </body>
+</html>

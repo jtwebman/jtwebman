@@ -1,0 +1,38 @@
+---
+import { siteConfig } from '../config/site';
+
+const currentYear = new Date().getFullYear();
+
+const socialLinks = [
+  { name: 'GitHub', url: siteConfig.social.github },
+  { name: 'LinkedIn', url: siteConfig.social.linkedin },
+  { name: 'Twitter', url: siteConfig.social.twitter },
+  { name: 'YouTube', url: siteConfig.social.youtube },
+];
+---
+
+<footer class="mt-auto border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+  <div class="container mx-auto px-4 py-8">
+    <div class="flex flex-col items-center gap-4">
+      <div class="flex gap-6">
+        {
+          socialLinks.map(link => (
+            <a
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              aria-label={link.name}
+            >
+              {link.name}
+            </a>
+          ))
+        }
+      </div>
+      <p class="text-sm text-gray-600 dark:text-gray-400">
+        © {currentYear}
+        {siteConfig.author.name}. All rights reserved.
+      </p>
+    </div>
+  </div>
+</footer>

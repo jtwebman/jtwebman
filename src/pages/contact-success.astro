@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout title="Message Sent - JT Turner" description="Your message has been sent successfully">
+  <div class="flex flex-col min-h-screen">
+    <Header />
+
+    <main class="flex-grow bg-gray-50 dark:bg-gray-900">
+      <section class="container mx-auto px-4 py-16">
+        <div class="max-w-2xl mx-auto text-center">
+          <div
+            class="bg-white dark:bg-gray-800 rounded-lg p-8 border border-gray-200 dark:border-gray-700 shadow-sm"
+          >
+            <div
+              class="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-6"
+            >
+              <svg
+                class="w-8 h-8 text-green-600 dark:text-green-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
+              Message Sent Successfully!
+            </h1>
+
+            <p class="text-lg text-gray-700 dark:text-gray-300 mb-8">
+              Thank you for reaching out. I'll review your message and get back to you within 1-2
+              business days.
+            </p>
+
+            <a
+              href="/"
+              class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            >
+              Back to Home
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+  </div>
+</BaseLayout>

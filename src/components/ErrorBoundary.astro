@@ -1,0 +1,57 @@
+---
+export interface Props {
+  title?: string;
+  message?: string;
+  showRetry?: boolean;
+}
+
+const {
+  title = 'Something went wrong',
+  message = 'We encountered an error while loading this content. Please try again later.',
+  showRetry = true,
+} = Astro.props;
+---
+
+<div
+  class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center"
+>
+  <div class="max-w-md mx-auto">
+    <div class="text-red-600 dark:text-red-400 mb-4">
+      <svg class="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+        ></path>
+      </svg>
+    </div>
+
+    <h3 class="text-lg font-semibold text-red-800 dark:text-red-200 mb-2">
+      {title}
+    </h3>
+
+    <p class="text-red-700 dark:text-red-300 mb-4">
+      {message}
+    </p>
+
+    {
+      showRetry && (
+        <button
+          onclick="window.location.reload()"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
+          </svg>
+          Try Again
+        </button>
+      )
+    }
+  </div>
+</div>
