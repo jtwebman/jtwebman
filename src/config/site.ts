@@ -1,8 +1,8 @@
 export const siteConfig = {
   name: 'JTWebman',
-  title: 'JTWebman - Software Engineer & Entrepreneur',
+  title: 'JTWebman - Principal Software Engineer & Entrepreneur',
   description:
-    'Personal website and blog of JT Turner, a software engineer and entrepreneur with over 25 years of experience building web applications and leading engineering teams.',
+    'Personal website and blog of JT Turner, a principal software engineer and entrepreneur with over 25 years of experience building web applications and leading engineering teams.',
   url: 'https://jtwebman.com',
   ogImage: '/images/og-image.jpg',
 
@@ -10,7 +10,7 @@ export const siteConfig = {
     name: 'JT Turner',
     email: 'jt@jtwebman.com',
     avatar: '/images/avatar.png',
-    bio: 'Software engineer and entrepreneur with 25+ years of experience building web applications and leading engineering teams.',
+    bio: 'Principal software engineer and entrepreneur with 25+ years of experience building web applications and leading engineering teams.',
     location: 'Beaverton, Oregon, USA',
     website: 'https://jtwebman.com',
   },
