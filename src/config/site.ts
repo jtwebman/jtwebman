@@ -20,6 +20,7 @@ export const siteConfig = {
     github: 'https://github.com/jtwebman',
     linkedin: 'https://linkedin.com/in/jtwebman',
     youtube: 'https://www.youtube.com/@JTWebMan',
+    roblox: 'https://www.roblox.com/users/2416255318/profile',
   },
 
   navigation: [
