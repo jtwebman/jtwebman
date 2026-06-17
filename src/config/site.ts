@@ -2,7 +2,7 @@ export const siteConfig = {
   name: 'JTWebman',
   title: 'JTWebman - Principal Software Engineer & Entrepreneur',
   description:
-    'Personal website and blog of JT Turner, a principal software engineer and entrepreneur with over 25 years of experience building web applications and leading engineering teams.',
+    'Personal website of JT Turner, a principal software engineer and entrepreneur with over 25 years of experience building web applications and leading engineering teams.',
   url: 'https://jtwebman.com',
   ogImage: '/images/og-image.jpg',
 
@@ -26,8 +26,7 @@ export const siteConfig = {
   navigation: [
     { name: 'Home', href: '/' },
     { name: 'About', href: '/about' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'Services', href: '/services' },
+    { name: 'Projects', href: '/projects' },
     { name: 'Contact', href: '/contact' },
   ],
 
@@ -42,7 +41,7 @@ export const siteConfig = {
   },
 
   features: {
-    rss: true,
+    rss: false,
     sitemap: true,
     analytics: false, // Add analytics ID when ready
   },

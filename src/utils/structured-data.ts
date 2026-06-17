@@ -1,15 +1,5 @@
 import { siteConfig } from '../config/site';
 
-export interface BlogPostStructuredData {
-  title: string;
-  description: string;
-  datePublished: string;
-  dateModified?: string;
-  author: string;
-  image?: string;
-  url: string;
-}
-
 export function generatePersonStructuredData() {
   return {
     '@context': 'https://schema.org',
@@ -45,89 +35,30 @@ export function generateWebsiteStructuredData() {
       name: siteConfig.author.name,
       url: siteConfig.author.website,
     },
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: {
-        '@type': 'EntryPoint',
-        urlTemplate: `${siteConfig.url}/blog?search={search_term_string}`,
-      },
-      'query-input': 'required name=search_term_string',
-    },
   };
 }
 
-export function generateBlogPostStructuredData(post: BlogPostStructuredData) {
+export function generateProjectStructuredData(project: {
+  name: string;
+  tagline: string;
+  url: string;
+  liveUrl?: string;
+  sourceUrl?: string;
+}) {
   return {
     '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: post.title,
-    description: post.description,
-    image: post.image || siteConfig.defaults.image,
-    datePublished: post.datePublished,
-    dateModified: post.dateModified || post.datePublished,
+    '@type': 'SoftwareApplication',
+    name: project.name,
+    description: project.tagline,
+    applicationCategory: project.liveUrl ? 'WebApplication' : 'DeveloperApplication',
+    operatingSystem: 'Web',
+    url: project.liveUrl ?? project.url,
     author: {
-      '@type': 'Person',
-      name: post.author,
-      url: siteConfig.author.website,
-      image: siteConfig.author.avatar,
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: siteConfig.name,
-      url: siteConfig.url,
-      logo: {
-        '@type': 'ImageObject',
-        url: siteConfig.author.avatar,
-      },
-    },
-    mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': post.url,
-    },
-    url: post.url,
-  };
-}
-
-export function generateBreadcrumbStructuredData(items: Array<{ name: string; url: string }>) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: items.map((item, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      name: item.name,
-      item: item.url,
-    })),
-  };
-}
-
-export function generateServiceStructuredData() {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'Service',
-    name: 'Software Engineering Consultation',
-    description:
-      'Professional software engineering consultation and advice from a 25+ year veteran',
-    provider: {
       '@type': 'Person',
       name: siteConfig.author.name,
       url: siteConfig.author.website,
-      image: siteConfig.author.avatar,
     },
-    offers: {
-      '@type': 'Offer',
-      price: '100',
-      priceCurrency: 'USD',
-      description: 'One-hour consultation with a 25+ year software engineer',
-      availability: 'https://schema.org/InStock',
-      validFrom: new Date().toISOString(),
-    },
-    areaServed: {
-      '@type': 'Country',
-      name: 'United States',
-    },
-    serviceType: 'Software Engineering Consultation',
-    category: 'Professional Services',
+    ...(project.sourceUrl ? { codeRepository: project.sourceUrl } : {}),
   };
 }
 

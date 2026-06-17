@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import LinkCard from '../../components/LinkCard.astro';
+import { projects } from '../../data/projects';
+---
+
+<BaseLayout
+  title="Projects - JT Turner"
+  description="Apps and open-source projects built by JT Turner, with the tech behind each one."
+>
+  <div class="flex flex-col min-h-screen">
+    <Header />
+
+    <main class="flex-grow bg-gray-50 dark:bg-gray-900">
+      <section class="container mx-auto px-4 py-16">
+        <div class="max-w-4xl mx-auto">
+          <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">Projects</h1>
+          <p class="text-lg text-gray-600 dark:text-gray-400 mb-12 max-w-2xl">
+            A few of the things I've built lately: apps, tools, and the occasional joke taken too
+            far. Open one to see what it does and the tech behind it.
+          </p>
+
+          <div class="grid md:grid-cols-2 gap-4">
+            {
+              projects.map(project => (
+                <LinkCard
+                  title={project.name}
+                  href={`/projects/${project.slug}`}
+                  description={project.tagline}
+                  external={false}
+                />
+              ))
+            }
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+  </div>
+</BaseLayout>
