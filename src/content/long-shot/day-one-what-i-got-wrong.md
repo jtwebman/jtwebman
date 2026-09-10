@@ -129,9 +129,9 @@ That means the caveat I was treating as a footnote is actually the main event. E
 
 The story above is a story. It could be wrong. Maybe English just breaks the method for some other reason.
 
-There is a clean way to check. Languages differ in how closely their spelling matches their sound. Finnish is almost perfectly one letter to one sound. Spanish and Italian are close. French has a lot of silent letters. English is the worst of the five.
+Languages differ in how closely their spelling matches their sound. Finnish is almost perfectly one letter to one sound. Spanish and Italian are close. French has a lot of silent letters. English is the worst of the five.
 
-So if my explanation is right, the chain should help on Finnish and Spanish, and stop helping as spelling drifts away from sound. I wrote that down before running anything, then downloaded a book in each language and ran the same code.
+So if my explanation is right, the chain should help on Finnish and Spanish and stop helping as spelling drifts away from sound. I wrote that down before running anything, then downloaded a book in each language.
 
 | Language | Spelling matches sound | Chain advantage |
 | -------- | ---------------------- | --------------- |
@@ -141,11 +141,23 @@ So if my explanation is right, the chain should help on Finnish and Spanish, and
 | French   | loosely                | +0.004          |
 | English  | badly                  | -0.064          |
 
-The correlation is -0.88. The three languages with regular spelling all get a solid benefit. French sits at zero. English is negative at every data size I tried.
+Correlation of -0.88. I wrote in my notes that this was the clearest result of the day and the only one where I called the outcome in advance.
 
-So it was not a quirk of English. The same prior flips from helpful to harmful depending on the representation it is given. That is the clearest result of the day and it is the only one where I predicted the outcome before seeing it.
+## And then I widened it, and it fell apart
 
-Worth saying: this is five languages, so the exact number means little. The ordering is the finding. And the books differ in age and style, so I only compared each language against itself, never one language against another.
+Five languages is not many. So I downloaded Project Gutenberg's whole catalogue listing, pulled the biggest book in twelve more languages, and ran it again on seventeen.
+
+The correlation dropped from -0.88 to **-0.34**. With seventeen points that is not a real effect. The groups also stopped being in order. The second deepest group scored better than the shallowest one.
+
+The five languages I happened to start with lined up. Pick five points out of a noisy cloud of seventeen and you will often get a clean line. I picked mine before I had the other twelve.
+
+I want to be clear about how this one is different. The earlier mistakes were caught by staring harder at data I already had. This one could only be caught by **going and getting more data**. And it had survived a prediction I wrote down in advance, which I had been treating as strong evidence. Calling a result correctly on a small sample turns out to feel far more convincing than it deserves to.
+
+I did try to rescue it. The pattern that remains does not look random. Every Germanic and Slavic language is negative and every Romance one is positive. So I guessed that heavy consonant clusters break the method, since it assumes one consonant before a vowel, and Polish and German are full of clusters.
+
+That correlation came out at -0.40. Barely better, still weak, and Polish kills it outright: Polish has the fewest clusters of that whole group and the worst score by a mile.
+
+So I have a real pattern across languages and two explanations that both fail. I am going to stop guessing rather than invent a third one from the same seventeen numbers.
 
 ## Last thing I tried: can it fix its own input?
 
@@ -181,7 +193,7 @@ That is a smaller claim than the one I wanted. It is also more interesting, and 
 
 It does help the original question, just not in the way I expected. A pipeline of pure counting, no neural network, no gradients, no labels, running in seconds on a laptop, gets to 93 percent of what a careful human rule achieves. That is a real point in favour of cheap methods. It is not a point in favour of clever priors.
 
-But only on the right representation. That is the honest limit of the whole day. Several separate threads all ended up pointing at the same thing: it is not the search, and it is not the statistics, it is what you feed them. The five language test puts a number on it.
+But only on the right representation. That is the honest limit of the whole day. Several separate threads all pointed at it. What I cannot do is tell you exactly which property of a representation matters, because the test I built to answer that fell apart when I widened it.
 
 ## Something that went against me
 
