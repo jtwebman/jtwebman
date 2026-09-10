@@ -439,7 +439,7 @@ That is a more useful thing to know than the 0.847.
 
 ## What actually stands at the end of the day
 
-Twelve times today my first version of a result was wrong. Eight were too optimistic, three too pessimistic, one too confident. Two were bugs in things I built to check myself with, which is its own lesson: a measuring instrument needs checking as much as the thing it measures. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
+Thirteen times today my first version of a result was wrong. Eight too optimistic, four too pessimistic, one too confident. Two were bugs in the instruments I built to check myself with, which is its own lesson: a measuring device needs checking as much as the thing it measures. And three times I measured the limit of a family of methods and wrote it down as the limit of the problem. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
 
 - **0.847 on the standard corpus**, against the published 0.803. Five-fold cross-validation, everything learned on held-out folds, spread of 0.005. It beats the next best method in all eight languages tested, by 0.112 on average. Strongest thing today, and the idea behind it is not mine.
 - **0.756 from a simpler method** on the same corpus, also blind, which is 94 percent of the benchmark from nothing but counting which letters follow which.
@@ -498,13 +498,39 @@ Which means my gloomy conclusion was wrong. At 30 percent errors the achievable 
 
 That is a much better problem to have. And the best place to attack it is at zero noise, where the same 0.15 gap exists and nothing else is going wrong.
 
-So I started on that, and got about a third of the way in one go.
+So I did that, and it turned out my ceiling was not a ceiling.
+
+First I got about a third of the way with a guess.
 
 The cheating program looks at the text on **both sides** of a possible boundary. My method only ever looked forwards, at how surprising the next sound is given what came before. The same idea works backwards: how surprising is the previous sound, given what comes after. Half the available signal, unused all day, in every experiment.
 
 Adding it takes the score from 0.636 to 0.676 against a ceiling of 0.774. So one obvious omission accounts for 29 percent of the gap. Two thirds of it is still unexplained, and the honest next move is to stop guessing at mechanisms and go and look at the specific places where the cheating program is confident and mine is not.
 
-Also worth noting: looking backwards on its own is clearly worse than looking forwards, 0.572 against 0.636. I did not expect that and I do not have an explanation for it yet.
+Then I stopped guessing and looked. Which boundaries does the cheating program find that mine misses?
+
+Rare words. The words either side of a missed boundary turn up about a third as often as the words either side of an easy one. And the actual examples are nearly all names:
+
+    fellow | whig       h | seward       hill | lamon
+    belz | herman       hoosier | youth  savage | kirk
+
+The cheating program has quietly memorised a vocabulary. My method has no memory of words at all. It only ever asks how surprising the next sound is. It has no concept that "seward" is a thing.
+
+So I tested that before building anything, which is the lesson I had already learned the hard way once tonight. I handed the program a perfect list of every word in the text.
+
+| Method                                    | Score     |
+| ----------------------------------------- | --------- |
+| My best honest method                     | 0.661     |
+| The cheating program                      | 0.755     |
+| A list of only the words seen in training | 0.751     |
+| **A perfect word list**                   | **0.944** |
+
+The perfect word list beats the "cheating" program by 0.19. Which means the thing I had been calling a ceiling was not a ceiling at all. It was the limit of one particular _kind_ of method, the kind that looks at a fixed window of nearby sounds. A vocabulary is not that kind of method. It remembers whole words of any length, so it lives outside the bound I drew.
+
+I have now made the same mistake three times tonight in the same area. Each time I measured how well a family of methods can do, and each time I wrote it down as how well the _problem_ can be done.
+
+The real headroom is at least 0.28, not the 0.15 I reported, and the missing ingredient is a vocabulary. Which is not news. Every serious method in this field since the 1990s builds one. I just did not have one, and it took looking at actual examples rather than reasoning about it to see that.
+
+The encouraging bit: a list containing only words already seen during training scores 0.751, and that is something a program could plausibly build for itself. So tomorrow has a specific target. Build a vocabulary with no labels, by taking the boundaries the method is most sure about, collecting whatever sits between them, and repeating. Get from 0.661 to somewhere near 0.75.
 
 That is a sharper place to begin than where I started today, with five experiments that were all already published.
 
