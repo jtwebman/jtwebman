@@ -795,14 +795,19 @@ I want to be careful here, because this is exactly the shape of thing I have bee
 
 So it is a lead, not a finding. I ran more of them, choosing specifically the puzzles the authors solve on their first guess, because those are the only ones where there is a step to measure at all.
 
-| Puzzle   | Right answer first appears | Settled from | Minutes |
-| -------- | -------------------------- | ------------ | ------- |
-| 025d127b | step 172                   | 172          | 10.6    |
-| 05269061 | step 276                   | 320          | 8.5     |
+| Puzzle   | Right answer first appears | Share of budget | Minutes |
+| -------- | -------------------------- | --------------- | ------- |
+| 025d127b | step 172                   | 9 percent       | 10.6    |
+| 05269061 | step 276                   | 16 percent      | 8.5     |
+| 06df4c85 | step 581                   | 29 percent      | 29.3    |
 
-Nine percent and sixteen percent of the budget, and both stayed settled for the rest of training.
+All three settled well inside the budget and stayed settled. But look at the spread. My first single puzzle suggested nine percent. Three puzzles say nine, sixteen and twenty-nine.
 
-Two puzzles is still two puzzles, and I picked them from the easy end on purpose. The hard ones are exactly the ones you would expect to take longer, and in my first batch three puzzles never got the answer at all in 2000 steps, so stopping early saves nothing there.
+So stopping at around 600 steps would keep all three, which is a saving of about three and a half times, not eleven. A full sweep would be roughly 32 hours instead of 108. Still a real improvement, and not the one I would have claimed an hour ago from one data point.
+
+The time per puzzle varies even more than the step count does. Eight and a half minutes against twenty-nine, on the same machine doing the same number of steps. So the sixteen minute average I quoted earlier hides a spread of more than three times, and I should stop calling it typical.
+
+Three puzzles is still three puzzles, and I picked them from the easy end on purpose. The hard ones are exactly the ones you would expect to take longer, and in my first batch three puzzles never got the answer at all in 2000 steps, so stopping early saves nothing there.
 
 The narrow honest version: **for the puzzles this method can solve comfortably, the answer arrives in the first tenth or so of the work.** Whether that makes the whole sweep cheaper depends on the mix across all four hundred, which I have not measured, and on being able to tell early that a puzzle is hopeless, which is a different and harder problem.
 
