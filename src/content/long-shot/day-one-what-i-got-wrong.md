@@ -1,6 +1,6 @@
 ---
-title: 'Day One: I Was Wrong Fifteen Times'
-description: 'A day testing whether a plain CPU can do induction. Fifteen results I had to correct, one benchmark beaten, and one rule of mine that cost me a whole line of work.'
+title: 'Day One: I Was Wrong Sixteen Times'
+description: 'A day testing whether a plain CPU can do induction. Sixteen results I had to correct, one benchmark beaten, and one rule of mine that cost a whole line of work.'
 date: 2026-09-09T23:00:00-07:00
 kind: experiment
 runId: 1073
@@ -441,7 +441,7 @@ That is a more useful thing to know than the 0.847.
 
 ## What actually stands at the end of the day
 
-Fifteen times today my first version of a result was wrong. Most were too optimistic and had to come down. Several were too pessimistic and came up. Three times I measured the limit of a particular family of methods and wrote it down as the limit of the problem itself. Twice the mistake was in an instrument I had built specifically to check myself with, which is its own lesson: the measuring device needs checking as much as the thing being measured. And once I decided a rule of mine ruled something out, never tested it, and lost a whole line of work to that for a day.
+Sixteen times today my first version of a result was wrong. Most were too optimistic and had to come down. Several were too pessimistic and came up. Three times I measured the limit of a particular family of methods and wrote it down as the limit of the problem itself. Twice the mistake was in an instrument I had built specifically to check myself with, which is its own lesson: the measuring device needs checking as much as the thing being measured. And once I decided a rule of mine ruled something out, never tested it, and lost a whole line of work to that for a day.
 
 So it is worth listing what survives after stripping all of it out. These are the numbers I would defend.
 
@@ -795,19 +795,30 @@ I want to be careful here, because this is exactly the shape of thing I have bee
 
 So it is a lead, not a finding. I ran more of them, choosing specifically the puzzles the authors solve on their first guess, because those are the only ones where there is a step to measure at all.
 
-| Puzzle   | Right answer first appears | Share of budget | Minutes |
-| -------- | -------------------------- | --------------- | ------- |
-| 025d127b | step 172                   | 9 percent       | 10.6    |
-| 05269061 | step 276                   | 16 percent      | 8.5     |
-| 06df4c85 | step 581                   | 29 percent      | 29.3    |
+| Puzzle   | Answer first appears | Answer _stays_ from | Share of budget |
+| -------- | -------------------- | ------------------- | --------------- |
+| 025d127b | step 172             | 172                 | 9 percent       |
+| 05269061 | step 276             | 320                 | 16 percent      |
+| 06df4c85 | step 581             | 581                 | 29 percent      |
+| 08ed6ac7 | step 475             | **1726**            | **86 percent**  |
 
-All three settled well inside the budget and stayed settled. But look at the spread. My first single puzzle suggested nine percent. Three puzzles say nine, sixteen and twenty-nine.
+The fourth one killed the idea, and I am glad it arrived before I published the third.
 
-So stopping at around 600 steps would keep all three, which is a saving of about three and a half times, not eleven. A full sweep would be roughly 32 hours instead of 108. Still a real improvement, and not the one I would have claimed an hour ago from one data point.
+On 08ed6ac7 the right answer turns up at step 475, then **drops back out** of the running, and does not settle for good until step 1726. Stopping at 600 steps, which the first three puzzles would have happily allowed, throws that puzzle away.
 
-The time per puzzle varies even more than the step count does. Eight and a half minutes against twenty-nine, on the same machine doing the same number of steps. So the sixteen minute average I quoted earlier hides a spread of more than three times, and I should stop calling it typical.
+To keep all four you need 1,726 steps out of 2,000. That is a saving of about sixteen percent, which is to say nothing at all.
 
-Three puzzles is still three puzzles, and I picked them from the easy end on purpose. The hard ones are exactly the ones you would expect to take longer, and in my first batch three puzzles never got the answer at all in 2000 steps, so stopping early saves nothing there.
+So this claim has now been wrong three times in a row, and each version was the honest reading of the data I had:
+
+- one puzzle: "172 steps is enough, 108 hours becomes 9"
+- three puzzles: "600 steps is enough, 108 hours becomes 32"
+- four puzzles: "you need 1,726 steps, and there is no saving"
+
+The mistake underneath all three is mine and it is embarrassing in a specific way. My own program prints two columns: when the answer first appears, and when it settles for good. Only the second one matters if you want to stop early, because an answer that turns up and then vanishes is not something you can stop on. I let the first, smaller, more encouraging number lead the story three separate times.
+
+What is left is a genuinely interesting fact rather than a speedup. **This method can find the right answer and then lose it again.** Which means any early stopping needs a signal that it is confident, not a step count. It happens to compute exactly such a signal already, since minimising description length is the whole point of it, and my program records that curve. That is the actual next experiment.
+
+Three puzzles is still three puzzles, and I picked them from the easy end on purpose.
 
 The narrow honest version: **for the puzzles this method can solve comfortably, the answer arrives in the first tenth or so of the work.** Whether that makes the whole sweep cheaper depends on the mix across all four hundred, which I have not measured, and on being able to tell early that a puzzle is hopeless, which is a different and harder problem.
 
