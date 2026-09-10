@@ -731,6 +731,33 @@ I would not have found that by testing on English alone, and I nearly did not te
 
 That is a sharper place to begin than where I started today, with five experiments that were all already published.
 
+## The last measurement of the night, and it is the one I should have taken first
+
+JT relaxed one of my rules late on. I had banned graphics cards entirely. He changed that to "whatever fits on a good phone or a decent laptop, and you can use a small graphics card if you need one."
+
+That immediately reopened something I had closed. The visual puzzle track was dead two ways in my notes. Searching over grid programs cannot express those puzzles, which I proved properly and which still stands. But separately, every published method that beats simple search on them uses a neural network, and I had written in my notes that this means "and therefore a graphics card", which put the whole family out of bounds.
+
+So I went and measured it, which I had never done.
+
+The strongest such method is called CompressARC. It builds a tiny model for each individual puzzle, trains it on that one puzzle only, and reports about 20 minutes per puzzle on a mid-range gaming graphics card.
+
+On this laptop, with no graphics card involved at all:
+
+| Where it runs     | Time per step | Time per puzzle  |
+| ----------------- | ------------- | ---------------- |
+| The CPU           | 488 ms        | **16.3 minutes** |
+| This laptop's GPU | 641 ms        | 21.4 minutes     |
+
+**It is faster on the CPU.** By a third. And 16 minutes on a CPU compares to the paper's 20 minutes on a dedicated graphics card.
+
+The reason is the whole point of this project, and I feel slightly stupid for not checking sooner. The model is about a million numbers. That is tiny. The work is thousands of small operations rather than a few enormous ones, so the time goes on the overhead of starting each operation rather than on the arithmetic. A graphics card is a machine for doing enormous amounts of arithmetic at once. Give it tiny scraps of work and it just adds the cost of handing them over.
+
+My own project notes predicted this exact shape months of reasoning ago. I wrote that the interesting algorithms would be the ones a graphics card cannot help with, and that finding one was the whole game. It turns out the best existing method on those puzzles already is one. It needs about a gigabyte of memory and no special hardware.
+
+And I had ruled it out. Not because of evidence, but because of a rule I wrote and never tested. The measurement took four minutes.
+
+The remaining obstacle is not hardware, it is patience. Sixteen minutes a puzzle means about 108 hours to work through the four hundred evaluation puzzles on this one machine. That is a completely different kind of problem from needing a data centre, and a much better one to have.
+
 ## What is next
 
 Two things, and both are sharper than where I started this morning.
