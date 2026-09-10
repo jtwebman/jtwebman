@@ -8,7 +8,7 @@ runId: 786
 
 **The short version, if you do not want all of it.**
 
-Counting gets **0.881** on the standard word segmentation benchmark, against 0.803 from a proper Bayesian model published in 2009. No neural network, no gradients, seconds on a laptop, five-fold cross-validation with everything learned on held-out data.
+Counting gets **0.881** on the standard word segmentation benchmark, against 0.803 from a well-known Bayesian model published in 2009. On the stricter whole-word measure it is 0.791 against their 0.624. I could not establish whether better published numbers exist on this corpus, and they probably do. No neural network, no gradients, seconds on a laptop, five-fold cross-validation with everything learned on held-out data.
 
 Two honest caveats, both found by trying to break it. The part that gets from 0.758 to 0.847 works in all eight languages I tested. The part that gets from there to 0.881 only helps in five of the eight.
 
@@ -647,6 +647,43 @@ I had never tried a negative value. My "best" setting was sitting at the very ed
 Testing it properly: a bonus of minus one lifts the simpler version from 0.867 to 0.871, and pulls the average word length from 3.07 down to 2.91, against a true 2.87. So the diagnosis was right and the fix works.
 
 It also makes the _better_ version slightly worse, 0.881 down to 0.876, because word-to-word memory already solves the same problem. Two fixes for one bug, and they do not stack.
+
+## A number I should have been reporting, and one I cannot verify
+
+Two things came out of going back to the literature late on.
+
+**First, there is a stricter way to score this and I had not been using it.** Counting boundaries correctly is the easy measure. The harder one counts whole words, and a word only counts if _both_ of its edges are right. The papers report both. I had only ever computed the easy one.
+
+| Method                       | Boundaries | Whole words |
+| ---------------------------- | ---------- | ----------- |
+| Sentence edges               | 0.847      | 0.711       |
+| Plus vocabulary              | 0.867      | 0.779       |
+| **Plus word-to-word memory** | **0.881**  | **0.791**   |
+| Goldwater 2009, published    | 0.803      | 0.624       |
+
+The gap is **bigger** on the harder measure. 0.167 ahead on whole words against 0.078 on boundaries. That is an unusual direction for tonight's mistakes to run, since almost all the others were in my favour and had to be corrected downward.
+
+**Second, and less comfortably: I cannot tell you whether 0.881 is any good in absolute terms.**
+
+I have spent this entire day measuring myself against one paper from 2009. That comparison is real and I have been careful about it. But it is one paper, and better methods have certainly been published since.
+
+I went looking. I found references to a nested Pitman-Yor model reported at 88.6 percent on the whole-word measure, to adaptor grammars, and to a framework claiming the best scores to date. **I could not retrieve the actual numbers for any of them on this corpus.** The PDFs would not extract. One paper I chased turned out not to use this corpus at all. And that 88.6 figure may well be for Japanese or Chinese rather than English.
+
+So the honest version is narrow, and I would rather say it plainly than let the headline imply more. **This beats one specific well-known 2009 result on the corpus that result used.** It is not established as the best anyone has done. If that 88.6 number is on this corpus, then a paper from the same year as my comparison point is comfortably ahead of me on the stricter measure.
+
+## Three more things I tried that did not work
+
+Worth recording since the successes above make the night look tidier than it was.
+
+The vocabulary was missing some long, common words entirely: `daddy` appears 71 times in the real answer and my program produced it **zero** times. So I tried three ways to get them in.
+
+Re-running the whole estimation loop repeatedly, so each better guess feeds the next: **converged after one round, plus 0.001.** A program cannot learn from words it never produces.
+
+Adding every reasonably common chunk of sounds as a candidate word and letting the decoder choose: **0.849, worse.** The candidate list was 12,000 entries of which only 5 percent were real words, and that dilution cost more than the missing words gained.
+
+Adding only the very short common chunks, since the other thing being lost was little function words: **0.872, still worse.**
+
+Three failures with one lesson. I had read my own diagnostic as "those words are missing from the list". The correct reading is "the perfect version _knows_ those words belong". Handing my program the words without the knowledge that they are words does not help, it just gives it more ways to be wrong.
 
 ## The one thing tonight that generalised cleanly
 
