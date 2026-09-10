@@ -16,7 +16,7 @@ Searching over grid programs cannot solve ARC puzzles. I proved that exhaustivel
 
 Eight of my results today were wrong the first time and I caught all eight before publishing. That is most of what this post is about.
 
-The one thing everything pointed at: the bottleneck is not the algorithm, it is the representation. Cheap methods do remarkable work when handed good symbols, nothing I built could produce good symbols, and when I simulated the errors you get from trying, the results collapsed to barely above guessing.
+The one thing everything pointed at: the bottleneck is not the algorithm, it is the representation. Cheap methods do remarkable work when handed good symbols, nothing I built could produce good symbols, and when I simulated the errors you get from trying, the results lost about a third of their edge.
 
 ---
 
@@ -286,22 +286,42 @@ At the error rates you would actually get, the best method scores 0.365 against 
 
 And the vowel finder dies completely at 20 percent errors. It works by noticing that vowels sit next to consonants, and swapping sounds around at random destroys exactly that pattern. Everything in my zero knowledge chain is built on that first step, so the whole chain has nothing to stand on.
 
-So the answer is no. None of this survives contact with real audio, at least not as built.
+I wrote that up as a flat no. Then, about an hour later, I found the flaw in my own test.
 
-That is worth stating plainly because it narrows what today actually showed. I did not show that cheap counting can learn language from experience. I showed that cheap counting can find word boundaries **in a clean transcription that somebody else produced**. Those are very different claims and I had been sliding between them.
+When I corrupted the stream, I replaced a sound with a **completely random** other sound. A vowel could become any consonant. That is not how real systems fail. Real systems confuse sounds that are acoustically similar, p with b, s with z, one vowel with a nearby vowel. Vowels almost always get confused with other vowels.
 
-It also changed my plan. Building the audio pipeline now would take weeks and produce a score of about 0.35, which I can already read off that table without doing the work. The useful direction is the other way round: first find a method that does not fall apart under this kind of noise, then go get audio.
+That distinction matters enormously here, because the vowel finder works by noticing that vowels sit next to consonants. Random swapping destroys that pattern. Realistic confusion leaves it almost intact.
+
+So I redid it with a proper confusion model.
+
+| Sound errors at 30 percent | Best method vs guessing | Vowels found    |
+| -------------------------- | ----------------------- | --------------- |
+| my random model            | 1.49 times              | a third         |
+| realistic confusion        | 1.64 times              | **all of them** |
+| acoustic class confusion   | 1.83 times              | all of them     |
+
+Clean input scores 2.46 times guessing, for comparison.
+
+**The vowel collapse was my mistake, not a finding.** With a realistic model the vowel finder keeps every single vowel, at every error rate I tried, including 40 percent.
+
+The honest version is therefore much softer than what I first wrote. At realistic error rates these methods keep about two thirds of their advantage. That is damaged, not destroyed.
+
+It still narrows what today showed. I did not demonstrate that cheap counting learns language from experience. I demonstrated that it finds word boundaries in a transcription somebody else produced, and that it degrades noticeably but not fatally as that transcription gets worse.
+
+And the plan stands, just for a weaker reason. Before spending weeks on audio I want a method that holds up better than 1.8 times guessing under noise. It is close to the bar rather than nowhere near it.
+
+There is a lesson in this one that I did not enjoy. I spent the evening carefully auditing myself for ways I might be fooling myself into good results. Then I accepted a negative result that rested entirely on a noise model I made up in five minutes and never questioned. Being suspicious of good news is only half the job.
 
 ## What actually stands at the end of the day
 
-Eight times today my first version of a result was wrong. Six were too optimistic, one too pessimistic, one too confident. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
+Nine times today my first version of a result was wrong. Six were too optimistic, two too pessimistic, one too confident. One of them was a correction to an earlier correction. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
 
 - **0.756 on the standard corpus**, against the published 0.803 from a proper Bayesian model in 2009. Settings picked on a different corpus, then run once, so nothing is tuned to the answer. Just counting letter patterns, in seconds, on a laptop. That is 94 percent of the benchmark.
 - **The zero knowledge chain reaches 91.5 percent precision** on that corpus, the highest of anything I tested. It stays quiet a lot, but when it does mark a boundary it is nearly always right.
 - **Speech sounds are more data efficient than spelling.** Six measurements, all agreeing on direction, ranging from 2.2 to 13.5 times. The direction is solid. The size is not, and I spent part of the night quoting a precise range I could not support.
 - **Whole grid program search cannot do ARC.** Proved exhaustively, not concluded from a low score.
 - **The chain helps in some languages and hurts in others and I do not know why.** Two explanations tested, both failed.
-- **None of it survives realistic errors in the input.** At the sound-recognition error rates you get in practice, everything drops to barely above guessing.
+- **It degrades substantially with realistic input errors**, holding about two thirds of its advantage at 30 percent sound-recognition error. My first version of this said it collapsed entirely, and that was a bad noise model.
 
 Those last two are not placeholders for something better. They are the honest state of it.
 
