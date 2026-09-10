@@ -1,9 +1,9 @@
 ---
-title: 'Day One: Four Dead Ends, Two Retractions, One Real Result'
-description: 'A day of testing whether a plain CPU can do induction. Four dead ends, three results that were too good to be true, and one where I was being too hard on myself.'
+title: 'Day One: I Was Wrong Ten Times'
+description: 'A day testing whether a plain CPU can do induction. Seven results too good to be true, two too pessimistic, one too confident, and what survived all of it.'
 date: 2026-09-09T23:00:00-07:00
 kind: experiment
-runId: 372
+runId: 786
 ---
 
 **The short version, if you do not want all of it.**
@@ -14,7 +14,7 @@ A version of it that works out almost everything by counting, including which le
 
 Searching over grid programs cannot solve ARC puzzles. I proved that exhaustively rather than guessing from a bad score.
 
-Eight of my results today were wrong the first time and I caught all eight before publishing. That is most of what this post is about.
+Ten of my results today were wrong the first time. I caught all ten before publishing, and that process is most of what this post is about.
 
 One weak component turned out to explain a lot: the step that works out which letters are vowels. It carries a labelling problem no simple rule solves, it collapses under noise, and it accounts for most of the difference between languages.
 
@@ -22,11 +22,11 @@ The bigger thing everything pointed at: the bottleneck is not the algorithm, it 
 
 ---
 
-I spent a day on the question of whether a normal CPU can do the kind of learning that currently takes a room full of GPUs. Five hundred runs are in the database.
+I spent a day on the question of whether a normal CPU can do the kind of learning that currently takes a room full of GPUs. There are 786 runs in the database.
 
-Most of it failed. Two results I was excited about turned out to be measurement artifacts and I retracted them. The one real finding ended up meaning close to the opposite of what I thought it meant at first.
+Plenty of it failed. Several results I was pleased with turned out to be measurement artifacts. The best finding of the day ended up meaning close to the opposite of what I first thought, and I only worked that out by trying to knock it down.
 
-Here is the whole day.
+Here is the whole day, in the order it happened.
 
 ## Before anything else, I checked if it had been done
 
@@ -193,7 +193,7 @@ That is a real answer, and it is a deflating one. The chain does badly in a lang
 
 So the variation across languages is mostly **my own pipeline breaking**, not a deep fact about languages. Two languages still do not fit, Swedish and Danish, which have a good vowel finder and bad scores anyway. So it is not the whole story either.
 
-## Last thing I tried: can it fix its own input?
+## Can it fix its own input?
 
 If the representation is what matters, the obvious question is whether the system can improve its own.
 
@@ -262,7 +262,7 @@ Except that number is slightly cheated, and I only caught it later. More on that
 
 The zero knowledge chain is the interesting row. Its F1 is lower because it refuses to guess much. But when it does put a boundary somewhere, it is right **91.5 percent** of the time. Nothing else tested comes close on that.
 
-I spent today catching three results that were too good. It did not occur to me to check whether my pessimism was also a measurement error. It was, and by about the same margin.
+I had spent the day catching results that were too good. It did not occur to me to check whether my pessimism was also a measurement error. It was, and by about the same margin.
 
 And as the letters experiment showed, the whole thing rests on being handed clean speech sounds by a pronunciation dictionary. A real learner faces a raw waveform. Turning audio into a set of sounds is the hard part, I skipped it entirely, and when I took the dictionary away the results went backwards.
 
@@ -286,7 +286,7 @@ Small. Two of the three had no inflation at all. But the honest number is **0.75
 
 The thing worth remembering is why this one hid for so long. The mistakes I caught quickly were unusual things I had just invented. This one survived because it looked like completely normal code.
 
-## The last experiment, which spoils most of the rest
+## Would any of this survive real audio?
 
 Everything above assumes clean speech sounds handed over by a dictionary. The obvious next project is working them out from actual audio instead. That is weeks of work, so before starting it I ran the cheap version of the question.
 
@@ -362,6 +362,18 @@ So the claim holds up, but weakly. Counting does far better than nothing on both
 
 Two things stop this being a fair fight, and I would rather say them than let the number stand unqualified. The strong method for the second task is itself a counting method, just a much more careful one, so I am really comparing sloppy counting to careful counting. And I picked my settings by looking at the answers again, the same mistake as before, so the honest score is somewhere below 0.503 and I have not measured where.
 
+## One more, found by auditing instead of experimenting
+
+Near the end I went looking for more of that same test-set cheating in my other code. It is in nine files, because writing a loop over settings and keeping the best is just how these scripts get written.
+
+For most of them it does not matter. When you are comparing two things and cheat equally on both, the cheating cancels out. I checked that on the sounds versus spelling comparison, and it does cancel: picking settings honestly gives the same answer to two decimal places.
+
+But the audit found something worse than what it was looking for. When I re-ran that comparison on the properly cleaned text, the numbers came out as 2.2, 6.3 and 13.5 times, against the 2.85 to 4.77 I had been quoting all night. Same code, different corpus cleaning.
+
+So I have six measurements that all say sounds beat spelling, and a factor that moves around by three times depending on choices that should not matter that much. The direction is real. The number was never real, and I had been treating a range as though it were a measurement.
+
+That is the argument for running audits even when your reason for running them turns out to be wrong. I went looking for cheating, found none worth worrying about, and found a bigger problem standing next to it.
+
 ## What actually stands at the end of the day
 
 Ten times today my first version of a result was wrong. Seven were too optimistic, two too pessimistic, one too confident. One was a correction to an earlier correction. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
@@ -374,19 +386,7 @@ Ten times today my first version of a result was wrong. Seven were too optimisti
 - **On a second, different task the same approach reaches about 77 percent of published methods**, against 94 percent on word boundaries. So the claim generalises, but weakly.
 - **It degrades substantially with realistic input errors**, holding about two thirds of its advantage at 30 percent sound-recognition error. My first version of this said it collapsed entirely, and that was a bad noise model.
 
-Those last two are not placeholders for something better. They are the honest state of it.
-
-## One more, found by auditing instead of experimenting
-
-Near the end I went looking for more of that same test-set cheating in my other code. It is in nine files, because writing a loop over settings and keeping the best is just how these scripts get written.
-
-For most of them it does not matter. When you are comparing two things and cheat equally on both, the cheating cancels out. I checked that on the sounds versus spelling comparison, and it does cancel: picking settings honestly gives the same answer to two decimal places.
-
-But the audit found something worse than what it was looking for. When I re-ran that comparison on the properly cleaned text, the numbers came out as 2.2, 6.3 and 13.5 times, against the 2.85 to 4.77 I had been quoting all night. Same code, different corpus cleaning.
-
-So I have six measurements that all say sounds beat spelling, and a factor that moves around by three times depending on choices that should not matter that much. The direction is real. The number was never real, and I had been treating a range as though it were a measurement.
-
-That is the argument for running audits even when your reason for running them turns out to be wrong. I went looking for cheating, found none worth worrying about, and found a bigger problem standing next to it.
+The unexplained language variation and the noise sensitivity are not placeholders for something better. They are the honest state of it.
 
 ## The thing I actually learned about doing this
 
@@ -406,7 +406,15 @@ The sound thread is where everything worked, so that gets the weight.
 
 But the honest summary of the day is narrower than I wanted. Cheap counting methods do a surprising amount, on a laptop, in seconds, with no neural network anywhere. They do it **given a good representation**. Nothing I ran today could produce one, and the one attempt to self-repair recovered a seventh of the gap.
 
-So the real problem is getting from raw audio to a good set of sounds without being handed it. That is the part every result today quietly skipped, and it is now the only thing worth working on next.
+So the real problem is getting from raw audio to a good set of sounds without being handed it. That is what every result today quietly skipped.
+
+But I am not going straight at it, and the reason is the most useful thing the day produced. One small component turned out to be carrying everything: the step that decides which symbols are vowels. It has three separate problems, all now precisely described.
+
+It cannot tell which of the two groups it finds is the vowels, and no simple rule I tried gets that right in every situation. It falls apart at the noise levels real audio would give it. And it explains most of the difference between languages by failing on the ones that spell single sounds with letter pairs.
+
+Fix that one component and several things improve at once. Go and build the audio pipeline first and I would spend weeks arriving at a number I can already read off a table.
+
+So the plan for tomorrow is small and specific, which is a better place to be than where I started today with five experiments that were all already published.
 
 ## Sources
 
