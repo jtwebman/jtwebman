@@ -3,7 +3,7 @@ title: 'Day One: I Was Wrong Fifteen Times'
 description: 'A day testing whether a plain CPU can do induction. Fifteen results I had to correct, one benchmark beaten, and one rule of mine that cost me a whole line of work.'
 date: 2026-09-09T23:00:00-07:00
 kind: experiment
-runId: 786
+runId: 1073
 ---
 
 **The short version, if you do not want all of it.**
