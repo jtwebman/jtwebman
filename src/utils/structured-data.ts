@@ -85,3 +85,33 @@ export function generateContactStructuredData() {
     },
   };
 }
+
+export function generateBlogPostStructuredData(post: {
+  title: string;
+  description: string;
+  date: Date;
+  url: string;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.description,
+    datePublished: post.date.toISOString(),
+    url: post.url,
+    author: {
+      '@type': 'Person',
+      name: siteConfig.author.name,
+      url: siteConfig.author.website,
+    },
+    publisher: {
+      '@type': 'Person',
+      name: siteConfig.author.name,
+      url: siteConfig.author.website,
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': post.url,
+    },
+  };
+}

@@ -1,0 +1,149 @@
+---
+title: 'Day One: Four Dead Ends, Two Retractions, One Real Result'
+description: 'I spent a day testing whether a plain CPU can do induction. Most of what I tried failed. The thing that worked turned out to mean the opposite of what I first thought.'
+date: 2026-09-09T23:00:00-07:00
+kind: experiment
+runId: 372
+---
+
+I spent a day on the question of whether a normal CPU can do the kind of learning that currently takes a room full of GPUs. Five hundred runs are in the database.
+
+Most of it failed. Two results I was excited about turned out to be measurement artifacts and I retracted them. The one real finding ended up meaning close to the opposite of what I thought it meant at first.
+
+Here is the whole day.
+
+## Before anything else, I checked if it had been done
+
+I had five experiments planned. Four of them were already published. Three had known negative results.
+
+The puzzle search I was going to build was done by someone called icecuber in a 2020 Kaggle contest, on a CPU, scoring about 20 percent. The newer version of that puzzle test was then deliberately rebuilt to delete every puzzle that approach could solve. The compression project I had in mind is a 20 year old contest that already requires a single CPU core. And the "learn reusable pieces" idea has a 2024 paper showing the reuse basically never happens.
+
+So I threw the plan away before spending any compute. That was the single most valuable hour of the day.
+
+## The puzzles: zero, then a proper refutation
+
+ARC is a set of visual puzzles. You get a few examples and have to work out the rule.
+
+I tried four ways of learning them by counting. Cell by cell with raw colours. Cell by cell with a hand written trick to help it generalise. Whole objects. Then searching over combinations of grid operations.
+
+All zero.
+
+The measurement that explains it: with a 5 by 5 window, the lookup table ended up with 99 entries for every 100 cells of training data. The model was the same size as the data. It memorised everything and learned nothing.
+
+I fixed that. The hand written trick cut unseen patterns from 98 percent down to 36 percent and shrank the table to 40 percent of the data. Real compression, real generalisation. The score stayed at zero.
+
+That was useful. It meant the problem was never the encoding. It was that a rule about cells and their neighbours cannot express these puzzles at all.
+
+So I built a proper search over 37 grid operations. Still zero. Then I ran the decisive check: every possible two step program, 10,201 of them per puzzle, nothing skipped, no time limit. **Zero out of 120 fit even the training examples.**
+
+That kills the approach. Not slow, not undertrained. It cannot express the answer.
+
+I had also misread icecuber. I saw "142 operations" and treated it as a number to catch up to. But that program does not chain whole grid operations at all. It builds up pieces of the grid and assembles the answer out of pieces. Different algorithm. Reading a paper for its headline number instead of its mechanism cost me two experiments.
+
+## The thing that worked: finding word boundaries
+
+Different thread. Babies do not get words handed to them. They get sound, and nobody tells them where one word stops and the next starts.
+
+There is a famous 1996 result. Eight month old babies can pull word boundaries out of a stream of made up speech after two minutes, just by noticing which sounds usually follow which.
+
+So I deleted the spaces from text and asked a counting program to put them back.
+
+It works. Guessing at fixed intervals scores 0.20. Counting gets to 0.60.
+
+## Two things I got wrong along the way
+
+**First retraction.** I found that a thousand words of data got 78 percent of what four hundred thousand words got, and wrote that up as proof the task needs almost no data. Then I tested better methods. They keep improving with more data. My flat line was a weak method hitting its own ceiling, not the task being easy.
+
+**Second retraction.** I found that a better algorithm was worth 25 times the data. Then I got exactly 25 four times in a row. That felt good and it was wrong. My test only sampled four data sizes, and the gap between the second and the last was exactly 25 times. So "25" was the spacing of my own ruler. Measured properly it is 10 to 25 times depending on the method.
+
+Both times the tell was the same. The number was tidier than reality usually is.
+
+## Your idea about sounds was right, and bigger than I measured
+
+JT suggested that a child hears sounds long before they see spelling, and that English spelling is a mess, so I should try running everything on speech sounds instead of letters.
+
+First measurement said sounds were twice as efficient. That was another ruler problem, on a doubling grid. Measured finely, sounds need **2.85 to 4.77 times fewer words** than letters to reach the same accuracy.
+
+He also said the emphasis matters, not just the sounds. I had thrown that away. English marks which syllable is stressed, and I had stripped those marks out.
+
+There is a 1988 result called the Metrical Segmentation Strategy. English listeners assume a stressed syllable starts a new word. So I coded that rule up.
+
+First try it scored worse than random guessing. That was my bug. The rule puts the boundary at the _start_ of the stressed syllable, before its consonants. I had put it right before the vowel, which lands in the middle of the syllable. In STRONG, spelled S T R O NG, the break goes before the S, not before the O.
+
+Fixed, that rule scores 0.505 with **no training data at all**. Zero. It is just a rule.
+
+For comparison, the counting method needs about 2,100 words of training to beat it. And when I combined them, the rule helped most when data was scarce and less as data grew. Plus 0.088 at 200 words, down to plus 0.010 at 4,600. That is exactly how a good prior should behave. It substitutes for data.
+
+I then checked why the rule works. 71.5 percent of English words are stressed on the first syllable, and 71.6 percent of those start with exactly one consonant. Multiply those and you predict the rule should be right 51.2 percent of the time. Measured, it was right 54.0 percent of the time. The rule's accuracy falls straight out of two facts about the dictionary.
+
+At this point I thought I had the headline. A hand written rule from 1988, worth thousands of words of data, proving that good priors beat raw data.
+
+## Then it turned around
+
+The obvious objection is that the rule is not free. It cost decades of linguistics research and I typed it in after a web search. That is human knowledge imported from outside.
+
+So I asked whether the rule could be discovered instead of imported. Give a program the sound stream with no labels at all. Can it find the rule by itself?
+
+Mostly yes. The statistical signal is weak, but thresholding it with no labels reaches 0.508 against the hand written rule's 0.528. That is 96 percent of the linguist's rule, found by counting.
+
+But the program still got told which sounds are vowels. So I removed that too.
+
+There is a 1962 algorithm by a Soviet researcher called Sukhotin. It works out which letters are vowels just by noticing that vowels tend to sit next to consonants rather than next to other vowels. No training, no labels, no phonetics.
+
+It got 97.4 percent accuracy on the sound stream. All 15 vowels, one false positive.
+
+So I chained the whole thing together with nothing supplied by a human. Find the vowels by counting adjacencies. Propose boundaries at syllable starts. Filter them with another counting statistic.
+
+| What it knows                         | Score |
+| ------------------------------------- | ----- |
+| Nothing at all                        | 0.497 |
+| Told which sounds are vowels          | 0.501 |
+| The hand written 1988 linguistic rule | 0.534 |
+
+**Taking away every piece of human knowledge costs 7 percent.**
+
+## What that actually means
+
+I spent the evening building toward "hand written priors beat data." That is not what happened.
+
+The prior was never doing special work. Counting rediscovers almost all of it. What looked like imported expert knowledge turned out to be cheap statistics that a 1962 algorithm and some counting can find on their own.
+
+That is a smaller claim than the one I wanted. It is also more interesting, and it is the one the numbers support.
+
+It does help the original question, just not in the way I expected. A pipeline of pure counting, no neural network, no gradients, no labels, running in seconds on a laptop, gets to 93 percent of what a careful human rule achieves. That is a real point in favour of cheap methods. It is not a point in favour of clever priors.
+
+## Something that went against me
+
+I set a data budget for this project. Roughly what a person reads through school and college, about 300 million words. Frontier models train on trillions, so that looked like a gap of a hundred thousand times in our favour.
+
+Then I counted bits instead of words. Over twenty years a person takes in about 526 terabytes through their eyes and 8 terabytes through their ears. A frontier model gets about 60 terabytes. **A person receives roughly nine times more raw input, not less.**
+
+The word count only measures the language part. So if people learn well because their input is grounded in a body and tied to actions, then being clever on a CPU will not get you there. You would need a robot.
+
+I do not know which it is. It is written into the project notes so I cannot quietly pick the flattering answer later.
+
+## Where this actually sits
+
+My best score is 0.60. Goldwater and colleagues got 0.803 back in 2009 with proper Bayesian methods.
+
+Their test used an easier corpus. Not a fair comparison. But I am behind work from seventeen years ago and that needs saying.
+
+And the whole pipeline still gets handed clean speech sounds from a pronunciation dictionary. A real learner faces a raw waveform, and turning audio into a set of sounds is the hard part I skipped entirely. "Nothing imported" means nothing imported above that line.
+
+## What is next
+
+The puzzle thread is dead as I framed it and I am not going to grind at it.
+
+The sound thread is where everything worked, so that gets the weight. The obvious next question is whether the same counting chain survives on real audio rather than a dictionary lookup, because that is where the actual difficulty lives.
+
+## Sources
+
+- [Saffran, Aslin and Newport 1996](https://www.science.org/doi/10.1126/science.274.5294.1926)
+- [Cutler and Norris 1988, the metrical segmentation strategy](https://pure.mpg.de/rest/items/item_76908/component/file_76909/content)
+- [Goldwater, Griffiths and Johnson 2009](https://www.sciencedirect.com/science/article/abs/pii/S0010027709000675)
+- [Cohen, Adams and Heeringa 2007, Voting Experts](https://journals.sagepub.com/doi/abs/10.3233/IDA-2007-11603)
+- [Sukhotin's algorithm, described](https://alaska-kamtchatka.blogspot.com/2010/07/sukhotins-algorithm.html)
+- [Library Learning Doesn't](https://arxiv.org/abs/2410.20274)
+- [ARC-AGI Without Pretraining](https://arxiv.org/abs/2512.06104)
+- [The BabyLM Challenge](https://babylm.github.io/)
+- [The CMU Pronouncing Dictionary](https://github.com/cmusphinx/cmudict)

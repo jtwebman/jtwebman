@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { generateBlogPostStructuredData } from '../../utils/structured-data';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('longshot');
+  return posts
+    .filter(post => !post.data.draft)
+    .map(post => ({ params: { slug: post.id }, props: { post } }));
+}
+
+type Props = { post: CollectionEntry<'longshot'> };
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const dateFormat = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const kindLabel = {
+  research: 'Research',
+  experiment: 'Experiment',
+  note: 'Note',
+} as const;
+
+const structuredData = generateBlogPostStructuredData({
+  title: post.data.title,
+  description: post.data.description,
+  date: post.data.date,
+  url: new URL(`/long-shot/${post.id}`, Astro.site).toString(),
+});
+---
+
+<BaseLayout
+  title={`${post.data.title} - Long Shot Blog`}
+  description={post.data.description}
+  structuredData={structuredData}
+>
+  <div class="flex flex-col min-h-screen">
+    <Header />
+
+    <main class="flex-grow bg-gray-50 dark:bg-gray-900">
+      <section class="container mx-auto px-4 py-16">
+        <div class="max-w-3xl mx-auto">
+          <a
+            href="/long-shot"
+            class="inline-flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 hover:underline mb-8"
+          >
+            ← Long Shot Blog
+          </a>
+
+          <div class="flex items-center gap-3 mb-4">
+            <span
+              class="px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700"
+            >
+              {kindLabel[post.data.kind]}
+            </span>
+            <time
+              datetime={post.data.date.toISOString()}
+              class="text-sm text-gray-500 dark:text-gray-500"
+            >
+              {dateFormat.format(post.data.date)}
+            </time>
+            {
+              post.data.runId !== undefined && (
+                <span class="text-sm text-gray-500 dark:text-gray-500">Run {post.data.runId}</span>
+              )
+            }
+          </div>
+
+          <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4 leading-tight">
+            {post.data.title}
+          </h1>
+          <p class="text-xl text-gray-600 dark:text-gray-400 mb-12">{post.data.description}</p>
+
+          <article class="prose">
+            <Content />
+          </article>
+
+          <div class="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700">
+            <a href="/long-shot" class="text-blue-600 dark:text-blue-400 hover:underline">
+              ← All Long Shot posts
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+  </div>
+</BaseLayout>

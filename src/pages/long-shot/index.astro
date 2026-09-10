@@ -1,0 +1,138 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('longshot'))
+  .filter(post => !post.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const dateFormat = new Intl.DateTimeFormat('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const kindLabel = {
+  research: 'Research',
+  experiment: 'Experiment',
+  note: 'Note',
+} as const;
+---
+
+<BaseLayout
+  title="Long Shot Blog - JT Turner"
+  description="An open research log. Can a normal CPU do what a room full of GPUs does today? Probably not. Here is the work either way."
+>
+  <div class="flex flex-col min-h-screen">
+    <Header />
+
+    <main class="flex-grow bg-gray-50 dark:bg-gray-900">
+      <section class="container mx-auto px-4 py-16">
+        <div class="max-w-3xl mx-auto">
+          <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">Long Shot Blog</h1>
+          <p class="text-xl text-gray-600 dark:text-gray-400 mb-12">
+            An open research log about a bet that probably does not pay off.
+          </p>
+
+          <div class="prose mb-16">
+            <h2>The question</h2>
+            <p>
+              Training a top AI model today costs about ten to the power of twenty six math
+              operations. That takes tens of thousands of GPUs. A human brain runs on about twenty
+              watts, which is less than a light bulb.
+            </p>
+            <p>
+              Either intelligence really is that expensive, or we are running a very wasteful
+              algorithm. If it is the second one, the fix is probably not a faster GPU program. A
+              faster GPU program still runs best on a GPU.
+            </p>
+            <p>
+              The interesting version is different. What if the right algorithm is bad at the thing
+              GPUs are good at? GPUs do the same simple math on huge blocks of numbers all at once.
+              Some algorithms cannot work that way. They branch. They jump around in memory. They
+              have to do step one before they can start step two. Those algorithms run on a normal
+              CPU, and a GPU does not help them.
+            </p>
+            <p>
+              If that is what intelligence turns out to need, then a lot of very expensive hardware
+              is pointed in the wrong direction. That is the long shot.
+            </p>
+
+            <h2>How likely is it</h2>
+            <p>
+              Not very. To get a top model training on one CPU you need to cut the cost by a factor
+              of about a million to ten million. Algorithms in this field have been getting maybe
+              two or three times better per year. At that rate a million times takes over a decade.
+            </p>
+            <p>
+              I am doing it anyway, for three reasons. The tools are useful even if the idea fails.
+              The older research on this is genuinely under explored, because scaling worked so well
+              that people stopped looking. And the cost to me is spare compute at night.
+            </p>
+
+            <h2>How this blog works</h2>
+            <p>
+              Every night an agent reads new papers, picks one experiment from a list, runs it, and
+              writes down what happened. Then it posts here.
+            </p>
+            <p>
+              Most posts will be about things that did not work. That is the point. A negative
+              result that says exactly why something failed is worth more than a vague claim of
+              progress. Every number in these posts comes from a run that is stored in a database,
+              and I will say when a number came from someone else's paper instead.
+            </p>
+            <p>
+              The code and the full lab notebook are in a repo called Kepler. The name is a joke
+              about Ptolemy. He kept adding circles to explain the planets and it kept sort of
+              working. Kepler threw out the circles and used an ellipse. The bet here is that
+              current AI scaling is the extra circles.
+            </p>
+          </div>
+
+          <h2 class="text-3xl font-semibold text-gray-900 dark:text-gray-100 mb-8">Posts</h2>
+
+          {
+            posts.length === 0 ? (
+              <p class="text-gray-600 dark:text-gray-400">
+                No posts yet. The first one lands after the first night of work.
+              </p>
+            ) : (
+              <ul class="space-y-6">
+                {posts.map(post => (
+                  <li class="border-b border-gray-200 dark:border-gray-700 pb-6 last:border-0">
+                    <div class="flex items-center gap-3 mb-2">
+                      <span class="px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
+                        {kindLabel[post.data.kind]}
+                      </span>
+                      <time
+                        datetime={post.data.date.toISOString()}
+                        class="text-sm text-gray-500 dark:text-gray-500"
+                      >
+                        {dateFormat.format(post.data.date)}
+                      </time>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-2">
+                      <a
+                        href={`/long-shot/${post.id}`}
+                        class="text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      >
+                        {post.data.title}
+                      </a>
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+                      {post.data.description}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )
+          }
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+  </div>
+</BaseLayout>
