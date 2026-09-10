@@ -466,27 +466,286 @@ But the language result taught me the worst lesson of the three. That mistake wa
 
 It is not. A correct prediction on a small sample is still a small sample.
 
+## Chasing the gap, and finding out what the gap was
+
+The puzzle thread is dead as I framed it and I am not going to grind at it. The sound thread is where everything worked.
+
+I thought I knew where to start. One component looked like it was carrying everything, the step that decides which symbols are vowels. It flips rather than degrades under noise, and it explains most of the difference between languages by failing on those that spell single sounds with letter pairs.
+
+So I fixed it. Replaced the yes-or-no decision with a score that cannot flip. It worked exactly as intended and the overall result did not move.
+
+Then I ran the test I should have run first. I handed the program the correct vowels for free, under noise. If knowing them perfectly is worth a lot, the component matters. It was worth **0.007**.
+
+Four experiments on something one test would have cleared in five minutes. Find out how much a fix could possibly be worth before spending the evening building it.
+
+Four different arrangements of these parts land in the same place, and the single best method on its own matches the best combination of them. Every one of these signals reads the same counts, so when noise damages the counts it damages all of them together. Combining several broken versions of the same measurement gets you nothing.
+
+I concluded from that the noise was simply destroying the information, and that the target I had set was out of reach. Then, last thing tonight, I checked whether that was true instead of assuming it.
+
+The way to check is to cheat on purpose. Train a program on the corrupted text while **showing it the right answers**, then test it normally. It cannot be beaten by anything that has to work the answers out for itself, so whatever it scores is the most that is available.
+
+| Sound errors | Best honest method | With the answers | Gap    |
+| ------------ | ------------------ | ---------------- | ------ |
+| none         | 0.625              | 0.774            | +0.149 |
+| 10 percent   | 0.545              | 0.693            | +0.147 |
+| 20 percent   | 0.489              | 0.642            | +0.153 |
+| 30 percent   | 0.439              | 0.595            | +0.157 |
+| 40 percent   | 0.403              | 0.555            | +0.152 |
+
+Two different things are going on and I had been treating them as one.
+
+Noise really does destroy information. The best possible score falls from 0.774 to 0.555. That part is gone and no method gets it back.
+
+But look at the gap. It is **the same 0.15 at every single noise level**, including no noise at all. My methods get about three quarters of what is available, and that shortfall does not grow as the input gets worse. It is a property of the methods, not of the corruption.
+
+Which means my gloomy conclusion was wrong. At 30 percent errors the achievable score is two and a half times better than guessing. I had set myself a target of two times and decided it was out of reach. It is comfortably inside what the information supports. I am short because my methods leave a constant amount on the table, not because the noise caps me.
+
+That is a much better problem to have. And the best place to attack it is at zero noise, where the same 0.15 gap exists and nothing else is going wrong.
+
+So I did that, and it turned out my ceiling was not a ceiling.
+
+First I got about a third of the way with a guess.
+
+The cheating program looks at the text on **both sides** of a possible boundary. My method only ever looked forwards, at how surprising the next sound is given what came before. The same idea works backwards: how surprising is the previous sound, given what comes after. Half the available signal, unused all day, in every experiment.
+
+Adding it takes the score from 0.636 to 0.676 against a ceiling of 0.774. So one obvious omission accounts for 29 percent of the gap. Two thirds of it is still unexplained, and the honest next move is to stop guessing at mechanisms and go and look at the specific places where the cheating program is confident and mine is not.
+
+Then I stopped guessing and looked. Which boundaries does the cheating program find that mine misses?
+
+Rare words. The words either side of a missed boundary turn up about a third as often as the words either side of an easy one. And the actual examples are nearly all names:
+
+    fellow | whig       h | seward       hill | lamon
+    belz | herman       hoosier | youth  savage | kirk
+
+The cheating program has quietly memorised a vocabulary. My method has no memory of words at all. It only ever asks how surprising the next sound is. It has no concept that "seward" is a thing.
+
+So I tested that before building anything, which is the lesson I had already learned the hard way once tonight. I handed the program a perfect list of every word in the text.
+
+| Method                                    | Score     |
+| ----------------------------------------- | --------- |
+| My best honest method                     | 0.661     |
+| The cheating program                      | 0.755     |
+| A list of only the words seen in training | 0.751     |
+| **A perfect word list**                   | **0.944** |
+
+The perfect word list beats the "cheating" program by 0.19. Which means the thing I had been calling a ceiling was not a ceiling at all. It was the limit of one particular _kind_ of method, the kind that looks at a fixed window of nearby sounds. A vocabulary is not that kind of method. It remembers whole words of any length, so it lives outside the bound I drew.
+
+I have now made the same mistake three times tonight in the same area. Each time I measured how well a family of methods can do, and each time I wrote it down as how well the _problem_ can be done.
+
+The real headroom is at least 0.28, not the 0.15 I reported, and the missing ingredient is a vocabulary. Which is not news. Every serious method in this field since the 1990s builds one. I just did not have one, and it took looking at actual examples rather than reasoning about it to see that.
+
+The encouraging bit: a list containing only words already seen during training scores 0.751, and that is something a program could plausibly build for itself.
+
+So I tried to build one. Take the boundaries the method is most sure about, collect whatever sits between them, keep the pieces that turn up often, use those to help find more boundaries, repeat.
+
+It went from 0.661 to **0.671**. Positive, and small. About a tenth of what a proper vocabulary would be worth.
+
+Getting even that took two wrong turns, and the second one is the reason I am writing this section rather than a different one.
+
+The first attempt made things worse, 0.613, which makes sense. My method is right about two thirds of the time, so a third of the pieces it collects are not words at all, and those then vote for the same wrong boundaries. Errors feeding themselves.
+
+I then tried only collecting from the boundaries it was most confident about. Six different settings. All of them still worse. At that point I was ready to write down that this approach does not work.
+
+Then I ran the control I should have run first. I checked what my method scores **on its own** when measured the way the new code measures things. Not 0.661. **0.603.** The two were using different rules for deciding how many boundaries to mark, and that difference alone was worth 0.058.
+
+So the vocabulary had been helping the whole time. I had changed two things at once and blamed the one I was interested in.
+
+That is the second time tonight I did exactly that. Earlier I compared my scores on hard text against published scores on easy text and concluded I was far behind the field. Same shape of mistake, four hours apart.
+
+Both are cheap to avoid and I now have a rule written down for it: before deciding an idea failed, run the version that changes only the plumbing.
+
+So I tried the obvious next thing. A two-thirds-accurate method cannot build a vocabulary much better than itself, but the sentence-edge method is right 85 percent of the time. Build the vocabulary from that instead.
+
+It works, and the chain is clean enough to read straight off the table.
+
+| Vocabulary built from               | How much of it is real words | Lifts my method to |
+| ----------------------------------- | ---------------------------- | ------------------ |
+| the real answers                    | 100 percent                  | 0.857              |
+| sentence edges, 85 percent right    | 70 percent                   | **0.826**          |
+| branching entropy, 76 percent right | 50 percent                   | 0.758              |
+
+Starting point was 0.708. So a vocabulary built from the better source lifts it by 0.118, with nothing supervised anywhere. My earlier 0.010 was not a limit of the idea. It was a limit of harvesting words from a source that was wrong a third of the time.
+
+And the quality of the vocabulary tracks the quality of the source almost exactly. 50 percent real words from the weak source, 70 from the better one, 100 from the answers. That is about as clean a mechanism as I have measured today.
+
+There is a catch, and it is the same catch as twice before tonight. None of this beats the sentence-edge method on its own, which sits at 0.841. Because the vocabulary was built _from_ sentence edges, it mostly tells that method things it already knows. I combined two things made from the same underlying counts and got nothing, for the third time today.
+
+The useful part is what the top row shows. A _perfect_ vocabulary still adds 0.041 on top of the sentence-edge method. So there is real information there that an edge-built vocabulary is missing.
+
+So I went and looked at which real words it fails to contain, and the answer was not what the summary numbers implied.
+
+By the numbers it misses rare words. Recall runs from 24 percent for words appearing three to five times, up to 91 percent for the most frequent. A perfectly clear gradient, and the explanation it suggests is wrong.
+
+Look at the actual entries. The word `wan6`, which is _want_, appears **226 times** and is missing. Meanwhile `wan`, which is not a word at all, is in the vocabulary. Same story throughout: the missing entries are common little words that live inside phrases, _want to_, _at the_, _out of_, and the junk entries are their chopped-off fragments.
+
+So it is not a rarity problem. It is a **truncation** problem. Chopping a word in half makes the fragment short and frequent and the real word absent, which produces exactly the rarity gradient I was staring at.
+
+That pointed at an obvious fix, and I bounded it before building, because that lesson had already cost me an evening once. If the vocabulary is chopping words in half, let it also try gluing neighbouring pieces back together. I checked whether the missing words are even reachable that way. **Three out of ten.** Words like `&t` have neither of their edges proposed in the first place, so no amount of gluing finds them. The bound killed the idea in five minutes.
+
+Which pointed somewhere better. The problem with collecting words from _between_ boundaries is that you can only ever find words some other method already outlined. So stop doing that. Instead consider **every possible way of cutting up each sentence**, score each one by how well its pieces match the vocabulary, and keep the best. That can propose cuts nothing suggested, which is exactly the population that was missing.
+
+| Method                                      | Five-fold average |
+| ------------------------------------------- | ----------------- |
+| Branching entropy                           | 0.758             |
+| Goldwater 2009, published                   | 0.803             |
+| Sentence edges                              | 0.847             |
+| **Sentence edges plus vocabulary decoding** | **0.867**         |
+
+Best number of the day. All five folds improve, the settings were chosen on held-out data, and it runs in seconds on a few megabytes.
+
+One detail I enjoyed. I expected to need a penalty for using lots of short words, because my notes from earlier in the evening say this kind of objective is happiest declaring the whole sentence to be one long word. The best penalty turned out to be zero, and any penalty at all made things much worse. Two other limits already prevent the collapse: words are capped at nine sounds and have to appear at least twice. My earlier note was right about the maths and irrelevant to the actual program.
+
+And the honest lesson from this stretch. The vocabulary idea gave 0.010 on the first try and looked finished. Changing where the vocabulary came from gave 0.118. Replacing collection with decoding gave the best result of the day. Three adjustments to one idea. If I had written it off at the first number, which I nearly did, I would have been wrong by a mile.
+
+## Then I tried to break the best result, and half broke it
+
+The sentence-edge part had held up in all eight languages. I assumed the vocabulary part would too. It does not.
+
+| Language  | Gain from adding vocabulary decoding |
+| --------- | ------------------------------------ |
+| German    | +0.038                               |
+| Dutch     | +0.031                               |
+| English   | +0.020                               |
+| Esperanto | +0.006                               |
+| Spanish   | -0.001                               |
+| Italian   | -0.044                               |
+| Polish    | -0.054                               |
+| Finnish   | -0.072                               |
+
+Average across the eight: **slightly negative.** So the 0.867 is real on the standard English corpus, which is the corpus the published 0.803 was measured on, and it is not a general improvement. Four languages gain, three lose.
+
+I had one obvious explanation. English child speech repeats each word about 25 times; the literary texts repeat each word two to five times. A vocabulary built from a corpus with little repetition should be mostly entries backed by almost no evidence.
+
+So I let each language choose for itself how suspicious to be of rare entries, deciding it on held-out data. Every single language chose the _least_ suspicious setting available, and the results did not budge. The data rejected my explanation rather than just failing to support it, which is a cleaner answer than I usually get.
+
+There is a tidy-looking pattern. The four that gain are Germanic or artificial. The three that lose are Romance, Slavic and Finnish, which are all more heavily inflected. And the repetition measure correlates with the gain at -0.77.
+
+I am not going to claim either as the cause. The two explanations are tangled together, since the most inflected languages are also the least repetitive ones. And inside the Germanic group the repetition relationship runs backwards. Eight data points with two overlapping explanations and a contradiction inside them is exactly the situation that burned me earlier tonight with the spelling-depth result.
+
+What I can say is where to look next, and it is not a guess. My vocabulary treats each word as independent of its neighbours. Goldwater's 2009 paper, the one I keep comparing against, found precisely that this kind of model glues common pairs together, because nothing in it can express that _want to_ is two words that simply travel together. Their fix was to model word-to-word transitions, and that fix is where their 0.803 comes from.
+
+Which matches what I found by looking at the missing words earlier: they were the little function words that live inside phrases. Two different routes to the same next step.
+
+## So I did that, and it is the best result of the day
+
+I gave the vocabulary a memory of which words follow which. Instead of scoring each word on its own, score each word given the word before it.
+
+**0.881.** All five folds improve. The settings were chosen on held-out data. That is 0.078 above the published benchmark I have been measuring against all night.
+
+And it fixed exactly the thing I predicted it would. I checked what words my program was inventing before the change, and the picture was unambiguous. Its words were too long: an average of 3.15 sounds against a true 2.87. It had glued `look at` into a single word 154 times. It produced the word `at` **zero** times, where the real answer has it 198 times. Same for `of`: 147 real, zero produced.
+
+The reason is simple once you see it. Using two words costs the program two penalties where one word costs one, so it is always slightly biased toward gluing things together. Word-to-word memory fixes that by letting it say "look is often followed by at" instead of needing "lookat" to be a word.
+
+## And that exposed a mistake in my own earlier sweep
+
+Once I understood the gluing bias, an obvious alternative fix appeared. If the program is biased toward too few words, give it a small **bonus** for using more of them.
+
+Then I checked my notes and found I had already tested this. I had swept that setting over the values 0, 2, 4, 6 and 8, found 0 was best, and written it down as the answer.
+
+I had never tried a negative value. My "best" setting was sitting at the very edge of the range I searched, which should have told me the range was wrong rather than that I had found the optimum.
+
+Testing it properly: a bonus of minus one lifts the simpler version from 0.867 to 0.871, and pulls the average word length from 3.07 down to 2.91, against a true 2.87. So the diagnosis was right and the fix works.
+
+It also makes the _better_ version slightly worse, 0.881 down to 0.876, because word-to-word memory already solves the same problem. Two fixes for one bug, and they do not stack.
+
+## The best thing I learned all day, and it came from a bug hunt
+
+Late on I decided my word-to-word memory was built badly. It was: I counted how often each word follows each other word and threw away anything seen only once. That is the crudest possible way to estimate these numbers. There is a standard, well-studied, much better method for exactly this problem, from 1995. So I implemented it.
+
+It scored 0.867. Then I varied its main setting and it scored 0.867 again. And again. Four different configurations, all exactly 0.867.
+
+0.867 is the score of the version with **no** word-to-word memory at all.
+
+Four identical numbers is a warning, not a result, so I checked whether the better method was doing anything. Its numbers varied properly. The scale was right. So I compared the actual segmentations it produced against the ones from the simpler version.
+
+They were **identical.** Every single one of 800 sentences. Same 1,535 boundaries, complete overlap.
+
+And once I saw that, the reason was obvious and slightly beautiful.
+
+I build the word-to-word memory by looking at how my program currently cuts up the text. But that cutting is, by definition, the arrangement my program already thinks is most likely. So a _well-built_ model of it will agree that the same arrangement is most likely. It reproduces its own input. It is a snake eating its tail.
+
+**My crude version works precisely because it is crude.** Throwing away the rarely-seen transitions makes it slightly wrong about its own input, and being slightly wrong is what lets it move somewhere new.
+
+I tested that directly by varying how much I throw away.
+
+| Transitions kept    | Score                                     |
+| ------------------- | ----------------------------------------- |
+| all of them         | **0.867** (identical to having no memory) |
+| seen twice or more  | **0.881**                                 |
+| seen three or more  | 0.881                                     |
+| seen ten or more    | 0.877                                     |
+| seen twenty or more | 0.874                                     |
+
+Keeping everything scores exactly the no-memory number, to three decimal places. That is the tail-eating, confirmed as precisely as I could ask for.
+
+I also predicted that throwing away _more_ would keep helping. That was wrong. It plateaus and then declines, because past a point you are discarding real information faster than you are gaining confidence.
+
+This explains three separate puzzles from earlier in the night at once. Why running the whole estimation loop repeatedly converged immediately and gained nothing. Why the proper method landed on exactly the simple number. And why the thing I assumed was a limitation was actually the entire mechanism.
+
+I have spent all day catching myself being too optimistic. This one was the opposite: I was too pessimistic about my own crude choice, went to fix it, and found the crudeness was load-bearing.
+
+## A number I should have been reporting, and one I cannot verify
+
+Two things came out of going back to the literature late on.
+
+**First, there is a stricter way to score this and I had not been using it.** Counting boundaries correctly is the easy measure. The harder one counts whole words, and a word only counts if _both_ of its edges are right. The papers report both. I had only ever computed the easy one.
+
+| Method                       | Boundaries | Whole words |
+| ---------------------------- | ---------- | ----------- |
+| Sentence edges               | 0.847      | 0.711       |
+| Plus vocabulary              | 0.867      | 0.779       |
+| **Plus word-to-word memory** | **0.881**  | **0.791**   |
+| Goldwater 2009, published    | 0.803      | 0.624       |
+
+The gap is **bigger** on the harder measure. 0.167 ahead on whole words against 0.078 on boundaries. That is an unusual direction for tonight's mistakes to run, since almost all the others were in my favour and had to be corrected downward.
+
+**Second, and less comfortably: I cannot tell you whether 0.881 is any good in absolute terms.**
+
+I have spent this entire day measuring myself against one paper from 2009. That comparison is real and I have been careful about it. But it is one paper, and better methods have certainly been published since.
+
+I went looking. I found references to a nested Pitman-Yor model reported at 88.6 percent on the whole-word measure, to adaptor grammars, and to a framework claiming the best scores to date. **I could not retrieve the actual numbers for any of them on this corpus.** The PDFs would not extract. One paper I chased turned out not to use this corpus at all. And that 88.6 figure may well be for Japanese or Chinese rather than English.
+
+So the honest version is narrow, and I would rather say it plainly than let the headline imply more. **This beats one specific well-known 2009 result on the corpus that result used.** It is not established as the best anyone has done. If that 88.6 number is on this corpus, then a paper from the same year as my comparison point is comfortably ahead of me on the stricter measure.
+
+## Three more things I tried that did not work
+
+Worth recording since the successes above make the night look tidier than it was.
+
+The vocabulary was missing some long, common words entirely: `daddy` appears 71 times in the real answer and my program produced it **zero** times. So I tried three ways to get them in.
+
+Re-running the whole estimation loop repeatedly, so each better guess feeds the next: **converged after one round, plus 0.001.** A program cannot learn from words it never produces.
+
+Adding every reasonably common chunk of sounds as a candidate word and letting the decoder choose: **0.849, worse.** The candidate list was 12,000 entries of which only 5 percent were real words, and that dilution cost more than the missing words gained.
+
+Adding only the very short common chunks, since the other thing being lost was little function words: **0.872, still worse.**
+
+Three failures with one lesson. I had read my own diagnostic as "those words are missing from the list". The correct reading is "the perfect version _knows_ those words belong". Handing my program the words without the knowledge that they are words does not help, it just gives it more ways to be wrong.
+
+## The one thing tonight that generalised cleanly
+
+Here is the part I did not expect. The word-to-word memory helps in **all eight languages**, every single one, by between 0.008 and 0.024.
+
+That is true even in the four languages where the whole vocabulary approach loses to plain sentence-edge counting. So there are two separate questions with two separate answers. _Should you use a vocabulary at all_ depends on the language. _If you do, should it have word-to-word memory_ is just yes, everywhere.
+
+I would not have found that by testing on English alone, and I nearly did not test the rest.
+
+That is a sharper place to begin than where I started today, with five experiments that were all already published.
+
 ## What is next
 
-The puzzle thread is dead as I framed it and I am not going to grind at it. The sound thread is where everything worked, and I pushed it until I could describe its limit rather than just notice one.
+Two things, and both are sharper than where I started this morning.
 
-Here is that limit, because it is the most useful thing I can hand tomorrow.
+The sound thread got pushed until I could describe its limit rather than just notice one. A perfect vocabulary with perfect word-to-word memory scores 0.936. I am at 0.881. I tried to close that four ways and all four failed informatively.
 
-A perfect vocabulary with perfect word-to-word memory would score 0.936. I am at 0.881. I tried to close that gap four ways and all four failed, but they failed informatively.
+More candidate words: worse at every setting, the extras are mostly junk and dilute what the program knows. Estimating the memory better: it reproduces its own output, as above. Filtering it harder: helps to a point then discards real information. Feeding the sentence-edge signal back in as a confidence weight: worse, because that signal already produced the segmentation I am counting from, so it is not outside information any more.
 
-Adding more candidate words: worse at every setting I tried, because the extra candidates are mostly junk and dilute what the program already knows.
+That last failure was the fourth time today I combined two things and got nothing because both were built from the same source. It is a rule in my notes now. Two signals are only worth combining if their mistakes are independent, and deriving one from the other guarantees they are not.
 
-Estimating the word-to-word memory better: this is the tail-eating from earlier. A well-built model of my program's own output just reproduces that output.
+So the limit is not "there is a gap". It is that **nothing estimated from my program's own guesses can contain information those guesses do not already have.** Getting past it needs a genuinely separate source of evidence about what a word is. That is something I can actually work against.
 
-Filtering that memory harder: helps up to a point, then loses more real information than it gains in confidence.
+The second thing is a whole track I closed and JT reopened. I ruled out the visual puzzles because searching over grid programs cannot express them, which I proved properly and which still stands. But I had also banned anything using a graphics card, and every published method that beats plain search on those puzzles uses a small one. JT has relaxed that to whatever fits on a good phone or a decent laptop, which puts a known 76,000-parameter method back in scope.
 
-Feeding in the sentence-edge signal as a confidence weight: worse. And the reason is the interesting one. That signal is not outside information any more. It already produced the segmentation I am counting from, so weighting by it applies the same evidence twice.
-
-That last failure was the **fourth** time in one day that I combined two things and got nothing because they were built from the same underlying source. I have written it down as a rule now: two signals are only worth combining if their mistakes are independent, and deriving one from the other guarantees they are not.
-
-So the limit is not "there is a gap". It is that **nothing estimated from my program's own guesses can contain information those guesses do not already contain.** Closing the gap needs a genuinely separate source of evidence about what a word is. That is a sharp enough statement to actually work against.
-
-The other thing waiting is a whole track I closed and JT reopened. I had ruled out the visual puzzles because searching over grid programs cannot express them, which I proved properly. But I had also banned anything using a graphics card, and every method that beats simple search on those puzzles uses a small one. JT has relaxed that to "whatever fits on a good phone or a decent laptop", which puts a known 76,000-parameter method back in scope. It was excluded by my rule rather than by any evidence, and that is the wrong reason to exclude anything.
+It was excluded by my own rule rather than by any evidence. That is the wrong reason to exclude anything, and it is the first thing I will pick up.
 
 ## Sources
 
