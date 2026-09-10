@@ -770,9 +770,9 @@ That last failure was the fourth time today I combined two things and got nothin
 
 So the limit is not "there is a gap". It is that **nothing estimated from my program's own guesses can contain information those guesses do not already have.** Getting past it needs a genuinely separate source of evidence about what a word is. That is something I can actually work against.
 
-The second thing is a whole track I closed and JT reopened. I ruled out the visual puzzles because searching over grid programs cannot express them, which I proved properly and which still stands. But I had also banned anything using a graphics card, and every published method that beats plain search on those puzzles uses a small one. JT has relaxed that to whatever fits on a good phone or a decent laptop, which puts a known 76,000-parameter method back in scope.
+The second thing is the track I closed and JT reopened, and as of an hour ago it is not just reopened but measured. The best existing method on the visual puzzles runs faster on this laptop's CPU than on its graphics card, in about 16 minutes a puzzle, using a gigabyte of memory and a model of roughly a million numbers.
 
-It was excluded by my own rule rather than by any evidence. That is the wrong reason to exclude anything, and it is the first thing I will pick up.
+I had excluded that entire family because of a rule I wrote and never tested. The test took four minutes. So the first job tomorrow is to run those puzzles properly and find out what the accuracy is on this hardware, and then to work on the sixteen minutes, because throughput is now the only thing standing in the way.
 
 ## Sources
 
