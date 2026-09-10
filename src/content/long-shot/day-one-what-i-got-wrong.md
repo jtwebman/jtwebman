@@ -16,7 +16,7 @@ Searching over grid programs cannot solve ARC puzzles. I proved that exhaustivel
 
 Eight of my results today were wrong the first time and I caught all eight before publishing. That is most of what this post is about.
 
-The one thing everything pointed at: the bottleneck is not the algorithm, it is the representation. Cheap methods do remarkable work when handed good symbols, and nothing I built could produce good symbols.
+The one thing everything pointed at: the bottleneck is not the algorithm, it is the representation. Cheap methods do remarkable work when handed good symbols, nothing I built could produce good symbols, and when I simulated the errors you get from trying, the results collapsed to barely above guessing.
 
 ---
 
@@ -268,6 +268,30 @@ Small. Two of the three had no inflation at all. But the honest number is **0.75
 
 The thing worth remembering is why this one hid for so long. The mistakes I caught quickly were unusual things I had just invented. This one survived because it looked like completely normal code.
 
+## The last experiment, which spoils most of the rest
+
+Everything above assumes clean speech sounds handed over by a dictionary. The obvious next project is working them out from actual audio instead. That is weeks of work, so before starting it I ran the cheap version of the question.
+
+Real programs that try to discover speech sounds from audio without supervision get them wrong 30 to 50 percent of the time. So I took my clean sound stream and deliberately corrupted it at those rates. Swapped sounds for other sounds, dropped some, inserted some. Then re-ran everything.
+
+| Sound errors | Guessing | Best method | Vowels found |
+| ------------ | -------- | ----------- | ------------ |
+| none         | 0.251    | 0.617       | all          |
+| 10 percent   | 0.245    | 0.517       | all          |
+| 20 percent   | 0.238    | 0.422       | **none**     |
+| 30 percent   | 0.242    | 0.365       | none         |
+| 40 percent   | 0.246    | 0.350       | a quarter    |
+
+At the error rates you would actually get, the best method scores 0.365 against a floor of 0.242. On clean input it was two and a half times better than guessing. Now it is one and a half times.
+
+And the vowel finder dies completely at 20 percent errors. It works by noticing that vowels sit next to consonants, and swapping sounds around at random destroys exactly that pattern. Everything in my zero knowledge chain is built on that first step, so the whole chain has nothing to stand on.
+
+So the answer is no. None of this survives contact with real audio, at least not as built.
+
+That is worth stating plainly because it narrows what today actually showed. I did not show that cheap counting can learn language from experience. I showed that cheap counting can find word boundaries **in a clean transcription that somebody else produced**. Those are very different claims and I had been sliding between them.
+
+It also changed my plan. Building the audio pipeline now would take weeks and produce a score of about 0.35, which I can already read off that table without doing the work. The useful direction is the other way round: first find a method that does not fall apart under this kind of noise, then go get audio.
+
 ## What actually stands at the end of the day
 
 Eight times today my first version of a result was wrong. Six were too optimistic, one too pessimistic, one too confident. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
@@ -277,8 +301,9 @@ Eight times today my first version of a result was wrong. Six were too optimisti
 - **Speech sounds are more data efficient than spelling.** Six measurements, all agreeing on direction, ranging from 2.2 to 13.5 times. The direction is solid. The size is not, and I spent part of the night quoting a precise range I could not support.
 - **Whole grid program search cannot do ARC.** Proved exhaustively, not concluded from a low score.
 - **The chain helps in some languages and hurts in others and I do not know why.** Two explanations tested, both failed.
+- **None of it survives realistic errors in the input.** At the sound-recognition error rates you get in practice, everything drops to barely above guessing.
 
-That last one is not a placeholder for something better. It is the honest state of it.
+Those last two are not placeholders for something better. They are the honest state of it.
 
 ## One more, found by auditing instead of experimenting
 
