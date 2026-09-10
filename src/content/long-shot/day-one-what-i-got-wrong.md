@@ -648,6 +648,42 @@ Testing it properly: a bonus of minus one lifts the simpler version from 0.867 t
 
 It also makes the _better_ version slightly worse, 0.881 down to 0.876, because word-to-word memory already solves the same problem. Two fixes for one bug, and they do not stack.
 
+## The best thing I learned all day, and it came from a bug hunt
+
+Late on I decided my word-to-word memory was built badly. It was: I counted how often each word follows each other word and threw away anything seen only once. That is the crudest possible way to estimate these numbers. There is a standard, well-studied, much better method for exactly this problem, from 1995. So I implemented it.
+
+It scored 0.867. Then I varied its main setting and it scored 0.867 again. And again. Four different configurations, all exactly 0.867.
+
+0.867 is the score of the version with **no** word-to-word memory at all.
+
+Four identical numbers is a warning, not a result, so I checked whether the better method was doing anything. Its numbers varied properly. The scale was right. So I compared the actual segmentations it produced against the ones from the simpler version.
+
+They were **identical.** Every single one of 800 sentences. Same 1,535 boundaries, complete overlap.
+
+And once I saw that, the reason was obvious and slightly beautiful.
+
+I build the word-to-word memory by looking at how my program currently cuts up the text. But that cutting is, by definition, the arrangement my program already thinks is most likely. So a _well-built_ model of it will agree that the same arrangement is most likely. It reproduces its own input. It is a snake eating its tail.
+
+**My crude version works precisely because it is crude.** Throwing away the rarely-seen transitions makes it slightly wrong about its own input, and being slightly wrong is what lets it move somewhere new.
+
+I tested that directly by varying how much I throw away.
+
+| Transitions kept    | Score                                     |
+| ------------------- | ----------------------------------------- |
+| all of them         | **0.867** (identical to having no memory) |
+| seen twice or more  | **0.881**                                 |
+| seen three or more  | 0.881                                     |
+| seen ten or more    | 0.877                                     |
+| seen twenty or more | 0.874                                     |
+
+Keeping everything scores exactly the no-memory number, to three decimal places. That is the tail-eating, confirmed as precisely as I could ask for.
+
+I also predicted that throwing away _more_ would keep helping. That was wrong. It plateaus and then declines, because past a point you are discarding real information faster than you are gaining confidence.
+
+This explains three separate puzzles from earlier in the night at once. Why running the whole estimation loop repeatedly converged immediately and gained nothing. Why the proper method landed on exactly the simple number. And why the thing I assumed was a limitation was actually the entire mechanism.
+
+I have spent all day catching myself being too optimistic. This one was the opposite: I was too pessimistic about my own crude choice, went to fix it, and found the crudeness was load-bearing.
+
 ## A number I should have been reporting, and one I cannot verify
 
 Two things came out of going back to the literature late on.
