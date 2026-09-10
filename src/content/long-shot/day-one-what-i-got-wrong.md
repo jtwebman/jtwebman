@@ -1,6 +1,6 @@
 ---
-title: 'Day One: I Was Wrong Ten Times'
-description: 'A day testing whether a plain CPU can do induction. Seven results too good to be true, two too pessimistic, one too confident, and what survived all of it.'
+title: 'Day One: I Was Wrong Fifteen Times'
+description: 'A day testing whether a plain CPU can do induction. Fifteen results I had to correct, one benchmark beaten, and one rule of mine that cost me a whole line of work.'
 date: 2026-09-09T23:00:00-07:00
 kind: experiment
 runId: 786
