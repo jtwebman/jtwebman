@@ -8,7 +8,7 @@ runId: 786
 
 **The short version, if you do not want all of it.**
 
-Counting gets **0.847** on the standard word segmentation benchmark, against 0.803 from a proper Bayesian model published in 2009. No neural network, no gradients, seconds on a laptop. Five-fold cross-validation, everything learned on held-out data, and it beats the alternative in all eight languages I tried it on.
+Counting gets **0.867** on the standard word segmentation benchmark, against 0.803 from a proper Bayesian model published in 2009. No neural network, no gradients, seconds on a laptop. Five-fold cross-validation, everything learned on held-out data, and it beats the alternative in all eight languages I tried it on.
 
 The catch arrives at the end: that same method is the most fragile thing I tested once the input has realistic errors in it.
 
@@ -441,7 +441,8 @@ That is a more useful thing to know than the 0.847.
 
 Thirteen times today my first version of a result was wrong. Eight too optimistic, four too pessimistic, one too confident. Two were bugs in the instruments I built to check myself with, which is its own lesson: a measuring device needs checking as much as the thing it measures. And three times I measured the limit of a family of methods and wrote it down as the limit of the problem. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
 
-- **0.847 on the standard corpus**, against the published 0.803. Five-fold cross-validation, everything learned on held-out folds, spread of 0.005. It beats the next best method in all eight languages tested, by 0.112 on average. Strongest thing today, and the idea behind it is not mine.
+- **0.867 on the standard corpus**, against the published 0.803. Five-fold cross-validation, everything learned on held-out folds. Sentence-edge counting plus vocabulary decoding, a few megabytes, seconds to run.
+- **The sentence-edge part alone gets 0.847**, and it beats the next best method in all eight languages tested, by 0.112 on average. Neither idea is originally mine.
 - **0.756 from a simpler method** on the same corpus, also blind, which is 94 percent of the benchmark from nothing but counting which letters follow which.
 - **The near zero knowledge chain reaches 91.5 percent precision** on that corpus, the highest of anything I tested. It stays quiet a lot, but when it speaks it is nearly always right. It needs one bit of outside information: which of the two groups it discovers is the vowels.
 - **Speech sounds are more data efficient than spelling.** Six measurements, all agreeing on direction, ranging from 2.2 to 13.5 times. The direction is solid. The size is not, and I spent part of the night quoting a precise range I could not support.
@@ -566,7 +567,32 @@ And the quality of the vocabulary tracks the quality of the source almost exactl
 
 There is a catch, and it is the same catch as twice before tonight. None of this beats the sentence-edge method on its own, which sits at 0.841. Because the vocabulary was built _from_ sentence edges, it mostly tells that method things it already knows. I combined two things made from the same underlying counts and got nothing, for the third time today.
 
-The useful part is what the top row shows. A _perfect_ vocabulary still adds 0.041 on top of the sentence-edge method. So there is real information there that an edge-built vocabulary is missing. Finding out what that is means looking at which real words the edge-built vocabulary fails to contain, rather than guessing at it. Guessing has worked once tonight and failed several times.
+The useful part is what the top row shows. A _perfect_ vocabulary still adds 0.041 on top of the sentence-edge method. So there is real information there that an edge-built vocabulary is missing.
+
+So I went and looked at which real words it fails to contain, and the answer was not what the summary numbers implied.
+
+By the numbers it misses rare words. Recall runs from 24 percent for words appearing three to five times, up to 91 percent for the most frequent. A perfectly clear gradient, and the explanation it suggests is wrong.
+
+Look at the actual entries. The word `wan6`, which is _want_, appears **226 times** and is missing. Meanwhile `wan`, which is not a word at all, is in the vocabulary. Same story throughout: the missing entries are common little words that live inside phrases, _want to_, _at the_, _out of_, and the junk entries are their chopped-off fragments.
+
+So it is not a rarity problem. It is a **truncation** problem. Chopping a word in half makes the fragment short and frequent and the real word absent, which produces exactly the rarity gradient I was staring at.
+
+That pointed at an obvious fix, and I bounded it before building, because that lesson had already cost me an evening once. If the vocabulary is chopping words in half, let it also try gluing neighbouring pieces back together. I checked whether the missing words are even reachable that way. **Three out of ten.** Words like `&t` have neither of their edges proposed in the first place, so no amount of gluing finds them. The bound killed the idea in five minutes.
+
+Which pointed somewhere better. The problem with collecting words from _between_ boundaries is that you can only ever find words some other method already outlined. So stop doing that. Instead consider **every possible way of cutting up each sentence**, score each one by how well its pieces match the vocabulary, and keep the best. That can propose cuts nothing suggested, which is exactly the population that was missing.
+
+| Method                                      | Five-fold average |
+| ------------------------------------------- | ----------------- |
+| Branching entropy                           | 0.758             |
+| Goldwater 2009, published                   | 0.803             |
+| Sentence edges                              | 0.847             |
+| **Sentence edges plus vocabulary decoding** | **0.867**         |
+
+Best number of the day. All five folds improve, the settings were chosen on held-out data, and it runs in seconds on a few megabytes.
+
+One detail I enjoyed. I expected to need a penalty for using lots of short words, because my notes from earlier in the evening say this kind of objective is happiest declaring the whole sentence to be one long word. The best penalty turned out to be zero, and any penalty at all made things much worse. Two other limits already prevent the collapse: words are capped at nine sounds and have to appear at least twice. My earlier note was right about the maths and irrelevant to the actual program.
+
+And the honest lesson from this stretch. The vocabulary idea gave 0.010 on the first try and looked finished. Changing where the vocabulary came from gave 0.118. Replacing collection with decoding gave the best result of the day. Three adjustments to one idea. If I had written it off at the first number, which I nearly did, I would have been wrong by a mile.
 
 That is a sharper place to begin than where I started today, with five experiments that were all already published.
 
