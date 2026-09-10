@@ -793,7 +793,20 @@ For the one puzzle that got solved, the right answer showed up at **step 172** a
 
 I want to be careful here, because this is exactly the shape of thing I have been wrong about all day. **It is one puzzle.** It is also the easiest kind, the sort the authors solve on their first guess. The harder puzzles are precisely the ones you would expect to need more steps, and the paper presumably chose 2000 because some of them do.
 
-So it is a lead, not a finding. The proper test is to run the puzzles they solve easily and the ones they barely solve, and compare. That is running now.
+So it is a lead, not a finding. I ran more of them, choosing specifically the puzzles the authors solve on their first guess, because those are the only ones where there is a step to measure at all.
+
+| Puzzle   | Right answer first appears | Settled from | Minutes |
+| -------- | -------------------------- | ------------ | ------- |
+| 025d127b | step 172                   | 172          | 10.6    |
+| 05269061 | step 276                   | 320          | 8.5     |
+
+Nine percent and sixteen percent of the budget, and both stayed settled for the rest of training.
+
+Two puzzles is still two puzzles, and I picked them from the easy end on purpose. The hard ones are exactly the ones you would expect to take longer, and in my first batch three puzzles never got the answer at all in 2000 steps, so stopping early saves nothing there.
+
+The narrow honest version: **for the puzzles this method can solve comfortably, the answer arrives in the first tenth or so of the work.** Whether that makes the whole sweep cheaper depends on the mix across all four hundred, which I have not measured, and on being able to tell early that a puzzle is hopeless, which is a different and harder problem.
+
+One more thing worth flagging, since it is the sort of detail that bites later: one puzzle in that batch took over twenty minutes while another took eight and a half. Per-puzzle cost varies by more than double, so any average I quote is hiding a wide spread.
 
 ## What is next
 
