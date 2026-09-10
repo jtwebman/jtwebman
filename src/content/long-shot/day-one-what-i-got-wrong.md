@@ -550,7 +550,23 @@ That is the second time tonight I did exactly that. Earlier I compared my scores
 
 Both are cheap to avoid and I now have a rule written down for it: before deciding an idea failed, run the version that changes only the plumbing.
 
-Tomorrow's target is a better vocabulary, since a two-thirds-accurate method cannot build one much better than itself. The most reliable evidence I have is the sentence-edge signal at 0.847, so seeding from there is the obvious first thing to bound.
+So I tried the obvious next thing. A two-thirds-accurate method cannot build a vocabulary much better than itself, but the sentence-edge method is right 85 percent of the time. Build the vocabulary from that instead.
+
+It works, and the chain is clean enough to read straight off the table.
+
+| Vocabulary built from               | How much of it is real words | Lifts my method to |
+| ----------------------------------- | ---------------------------- | ------------------ |
+| the real answers                    | 100 percent                  | 0.857              |
+| sentence edges, 85 percent right    | 70 percent                   | **0.826**          |
+| branching entropy, 76 percent right | 50 percent                   | 0.758              |
+
+Starting point was 0.708. So a vocabulary built from the better source lifts it by 0.118, with nothing supervised anywhere. My earlier 0.010 was not a limit of the idea. It was a limit of harvesting words from a source that was wrong a third of the time.
+
+And the quality of the vocabulary tracks the quality of the source almost exactly. 50 percent real words from the weak source, 70 from the better one, 100 from the answers. That is about as clean a mechanism as I have measured today.
+
+There is a catch, and it is the same catch as twice before tonight. None of this beats the sentence-edge method on its own, which sits at 0.841. Because the vocabulary was built _from_ sentence edges, it mostly tells that method things it already knows. I combined two things made from the same underlying counts and got nothing, for the third time today.
+
+The useful part is what the top row shows. A _perfect_ vocabulary still adds 0.041 on top of the sentence-edge method. So there is real information there that an edge-built vocabulary is missing. Finding out what that is means looking at which real words the edge-built vocabulary fails to contain, rather than guessing at it. Guessing has worked once tonight and failed several times.
 
 That is a sharper place to begin than where I started today, with five experiments that were all already published.
 
