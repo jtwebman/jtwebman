@@ -439,7 +439,7 @@ That is a more useful thing to know than the 0.847.
 
 ## What actually stands at the end of the day
 
-Eleven times today my first version of a result was wrong. Eight were too optimistic, two too pessimistic, one too confident. The last one was a bug I found only because I went looking for a way to break my own best result. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
+Twelve times today my first version of a result was wrong. Eight were too optimistic, three too pessimistic, one too confident. Two were bugs in things I built to check myself with, which is its own lesson: a measuring instrument needs checking as much as the thing it measures. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
 
 - **0.847 on the standard corpus**, against the published 0.803. Five-fold cross-validation, everything learned on held-out folds, spread of 0.005. It beats the next best method in all eight languages tested, by 0.112 on average. Strongest thing today, and the idea behind it is not mine.
 - **0.756 from a simpler method** on the same corpus, also blind, which is 94 percent of the benchmark from nothing but counting which letters follow which.
@@ -474,11 +474,31 @@ Then I ran the test I should have run first. I handed the program the correct vo
 
 Four experiments on something one test would have cleared in five minutes. Find out how much a fix could possibly be worth before spending the evening building it.
 
-The real answer is bleaker and more useful. Four different arrangements of these parts land in the same place, and the single best method on its own matches the best combination of them. Every one of these signals is computed from the same counts, so when noise damages the counts it damages all of them together. Combining several broken versions of the same measurement gets you nothing.
+Four different arrangements of these parts land in the same place, and the single best method on its own matches the best combination of them. Every one of these signals reads the same counts, so when noise damages the counts it damages all of them together. Combining several broken versions of the same measurement gets you nothing.
 
-So the thing to look for is not a better arrangement of these parts. It is a signal that breaks differently when the input is corrupted. Something built on how long things take, or what repeats across many sentences, rather than what sits next to what.
+I concluded from that the noise was simply destroying the information, and that the target I had set was out of reach. Then, last thing tonight, I checked whether that was true instead of assuming it.
 
-That is a sharper place to start than where I began today, with five experiments that were all already published.
+The way to check is to cheat on purpose. Train a program on the corrupted text while **showing it the right answers**, then test it normally. It cannot be beaten by anything that has to work the answers out for itself, so whatever it scores is the most that is available.
+
+| Sound errors | Best honest method | With the answers | Gap    |
+| ------------ | ------------------ | ---------------- | ------ |
+| none         | 0.625              | 0.774            | +0.149 |
+| 10 percent   | 0.545              | 0.693            | +0.147 |
+| 20 percent   | 0.489              | 0.642            | +0.153 |
+| 30 percent   | 0.439              | 0.595            | +0.157 |
+| 40 percent   | 0.403              | 0.555            | +0.152 |
+
+Two different things are going on and I had been treating them as one.
+
+Noise really does destroy information. The best possible score falls from 0.774 to 0.555. That part is gone and no method gets it back.
+
+But look at the gap. It is **the same 0.15 at every single noise level**, including no noise at all. My methods get about three quarters of what is available, and that shortfall does not grow as the input gets worse. It is a property of the methods, not of the corruption.
+
+Which means my gloomy conclusion was wrong. At 30 percent errors the achievable score is two and a half times better than guessing. I had set myself a target of two times and decided it was out of reach. It is comfortably inside what the information supports. I am short because my methods leave a constant amount on the table, not because the noise caps me.
+
+That is a much better problem to have. And the best place to attack it is at zero noise, where the same 0.15 gap exists and nothing else is going wrong.
+
+So tomorrow starts somewhere specific: find out what a program with the answers knows that branching entropy does not. That is a sharper place to begin than where I started today, with five experiments that were all already published.
 
 ## Sources
 
