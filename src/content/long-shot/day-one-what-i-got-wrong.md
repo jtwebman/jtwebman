@@ -16,7 +16,9 @@ Searching over grid programs cannot solve ARC puzzles. I proved that exhaustivel
 
 Eight of my results today were wrong the first time and I caught all eight before publishing. That is most of what this post is about.
 
-The one thing everything pointed at: the bottleneck is not the algorithm, it is the representation. Cheap methods do remarkable work when handed good symbols, nothing I built could produce good symbols, and when I simulated the errors you get from trying, the results lost about a third of their edge.
+One weak component turned out to explain a lot: the step that works out which letters are vowels. It carries a labelling problem no simple rule solves, it collapses under noise, and it accounts for most of the difference between languages.
+
+The bigger thing everything pointed at: the bottleneck is not the algorithm, it is the representation. Cheap methods do remarkable work when handed good symbols, nothing I built could produce good symbols, and when I simulated the errors you get from trying, the results lost about a third of their edge.
 
 ---
 
@@ -175,7 +177,21 @@ I did try to rescue it. The pattern that remains does not look random. Every Ger
 
 That correlation came out at -0.40. Barely better, still weak, and Polish kills it outright: Polish has the fewest clusters of that whole group and the worst score by a mile.
 
-So I have a real pattern across languages and two explanations that both fail. I am going to stop guessing rather than invent a third one from the same seventeen numbers.
+So I had a real pattern across languages and two explanations that both failed. I wrote in my notes that I should stop guessing, and specifically that I should not invent a third explanation out of the same seventeen numbers unless I could measure it **without looking at the segmentation scores at all**.
+
+Late in the night I found one, by accident, while trying to fix something else.
+
+The vowel finder returns complete nonsense on Polish. Zero out of the true vowels. And Polish was the worst language in that table by a mile. So I measured how good the vowel finder is in each language, which I can check against a simple list of that language's vowels and never touch the boundary scores.
+
+| Explanation                         | How strongly it predicts |
+| ----------------------------------- | ------------------------ |
+| How well spelling matches sound     | -0.34                    |
+| Consonant clusters                  | -0.40                    |
+| **How well the vowel finder works** | **+0.66**                |
+
+That is a real answer, and it is a deflating one. The chain does badly in a language when its very first step, working out which letters are vowels, goes wrong. Polish writes single sounds as letter pairs, sz and cz and rz. Dutch does the same with ij and oe. The vowel finder chokes on that, and everything built on top of it inherits the mess.
+
+So the variation across languages is mostly **my own pipeline breaking**, not a deep fact about languages. Two languages still do not fit, Swedish and Danish, which have a good vowel finder and bad scores anyway. So it is not the whole story either.
 
 ## Last thing I tried: can it fix its own input?
 
@@ -338,7 +354,7 @@ Ten times today my first version of a result was wrong. Seven were too optimisti
 - **The near zero knowledge chain reaches 91.5 percent precision** on that corpus, the highest of anything I tested. It stays quiet a lot, but when it speaks it is nearly always right. It needs one bit of outside information: which of the two groups it discovers is the vowels.
 - **Speech sounds are more data efficient than spelling.** Six measurements, all agreeing on direction, ranging from 2.2 to 13.5 times. The direction is solid. The size is not, and I spent part of the night quoting a precise range I could not support.
 - **Whole grid program search cannot do ARC.** Proved exhaustively, not concluded from a low score.
-- **The chain helps in some languages and hurts in others and I do not know why.** Two explanations tested, both failed.
+- **The chain does badly in a language mostly when its vowel finder fails there**, which predicts the pattern at 0.66. Two earlier explanations failed. Two languages still do not fit.
 - **It degrades substantially with realistic input errors**, holding about two thirds of its advantage at 30 percent sound-recognition error. My first version of this said it collapsed entirely, and that was a bad noise model.
 
 Those last two are not placeholders for something better. They are the honest state of it.
