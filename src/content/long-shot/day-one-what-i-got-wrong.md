@@ -498,7 +498,15 @@ Which means my gloomy conclusion was wrong. At 30 percent errors the achievable 
 
 That is a much better problem to have. And the best place to attack it is at zero noise, where the same 0.15 gap exists and nothing else is going wrong.
 
-So tomorrow starts somewhere specific: find out what a program with the answers knows that branching entropy does not. That is a sharper place to begin than where I started today, with five experiments that were all already published.
+So I started on that, and got about a third of the way in one go.
+
+The cheating program looks at the text on **both sides** of a possible boundary. My method only ever looked forwards, at how surprising the next sound is given what came before. The same idea works backwards: how surprising is the previous sound, given what comes after. Half the available signal, unused all day, in every experiment.
+
+Adding it takes the score from 0.636 to 0.676 against a ceiling of 0.774. So one obvious omission accounts for 29 percent of the gap. Two thirds of it is still unexplained, and the honest next move is to stop guessing at mechanisms and go and look at the specific places where the cheating program is confident and mine is not.
+
+Also worth noting: looking backwards on its own is clearly worse than looking forwards, 0.572 against 0.636. I did not expect that and I do not have an explanation for it yet.
+
+That is a sharper place to begin than where I started today, with five experiments that were all already published.
 
 ## Sources
 
