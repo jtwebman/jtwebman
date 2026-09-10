@@ -102,6 +102,27 @@ So I chained the whole thing together with nothing supplied by a human. Find the
 
 **Taking away every piece of human knowledge costs 7 percent.**
 
+## And then it turned around again
+
+That result had an obvious hole. The whole pipeline still gets clean speech sounds handed to it by a pronunciation dictionary. So I removed that too and ran the identical chain on plain English letters, where absolutely nothing is supplied.
+
+It falls apart.
+
+| Training words | The chain | Plain counting |
+| -------------- | --------- | -------------- |
+| 200            | 0.397     | 0.334          |
+| 960            | 0.369     | 0.408          |
+| 4,600          | 0.395     | 0.494          |
+| 20,000         | 0.466     | 0.510          |
+
+The chain only wins at the very smallest budget. Everywhere else plain counting beats it, and by 4,600 words it is not close.
+
+The reason is that on letters the vowel finder returns y, h, z and j as vowels. English spelling does not line up with syllables, so the boundaries it proposes are often in the wrong place. A structural assumption that is wrong is worse than having no assumption at all, once you have enough data to manage without one.
+
+So the good result was not about the chain. It was about the representation. Give it speech sounds and it works. Give it spelling and the same machinery underperforms simple counting.
+
+That means the caveat I was treating as a footnote is actually the main event. Everything that worked today sits downstream of a pronunciation dictionary having already done the hard part.
+
 ## What that actually means
 
 I spent the evening building toward "hand written priors beat data." That is not what happened.
@@ -111,6 +132,8 @@ The prior was never doing special work. Counting rediscovers almost all of it. W
 That is a smaller claim than the one I wanted. It is also more interesting, and it is the one the numbers support.
 
 It does help the original question, just not in the way I expected. A pipeline of pure counting, no neural network, no gradients, no labels, running in seconds on a laptop, gets to 93 percent of what a careful human rule achieves. That is a real point in favour of cheap methods. It is not a point in favour of clever priors.
+
+But only on the right representation. That is the honest limit of the whole day. Four separate threads all ended up pointing at the same thing: it is not the search, and it is not the statistics, it is what you feed them.
 
 ## Something that went against me
 
@@ -128,13 +151,13 @@ My best score is 0.60. Goldwater and colleagues got 0.803 back in 2009 with prop
 
 Their test used an easier corpus. Not a fair comparison. But I am behind work from seventeen years ago and that needs saying.
 
-And the whole pipeline still gets handed clean speech sounds from a pronunciation dictionary. A real learner faces a raw waveform, and turning audio into a set of sounds is the hard part I skipped entirely. "Nothing imported" means nothing imported above that line.
+And as the letters experiment showed, the whole thing rests on being handed clean speech sounds by a pronunciation dictionary. A real learner faces a raw waveform. Turning audio into a set of sounds is the hard part, I skipped it entirely, and when I took the dictionary away the results went backwards.
 
 ## What is next
 
 The puzzle thread is dead as I framed it and I am not going to grind at it.
 
-The sound thread is where everything worked, so that gets the weight. The obvious next question is whether the same counting chain survives on real audio rather than a dictionary lookup, because that is where the actual difficulty lives.
+The sound thread is where everything worked, so that gets the weight. And the letters experiment made the next question unavoidable rather than optional. Everything today depended on a good representation being supplied. So the real problem is getting from raw audio to that representation without being given it, which is the part every result today quietly skipped.
 
 ## Sources
 
