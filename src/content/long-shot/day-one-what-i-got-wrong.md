@@ -8,7 +8,9 @@ runId: 786
 
 **The short version, if you do not want all of it.**
 
-Counting gets **0.867** on the standard word segmentation benchmark, against 0.803 from a proper Bayesian model published in 2009. No neural network, no gradients, seconds on a laptop. Five-fold cross-validation, everything learned on held-out data, and it beats the alternative in all eight languages I tried it on.
+Counting gets **0.867** on the standard word segmentation benchmark, against 0.803 from a proper Bayesian model published in 2009. No neural network, no gradients, seconds on a laptop, five-fold cross-validation with everything learned on held-out data.
+
+Two honest caveats, both found by trying to break it. The part that gets from 0.758 to 0.847 works in all eight languages I tested. The part that gets from 0.847 to 0.867 only works in some, and averages slightly negative across the eight.
 
 The catch arrives at the end: that same method is the most fragile thing I tested once the input has realistic errors in it.
 
@@ -441,7 +443,7 @@ That is a more useful thing to know than the 0.847.
 
 Thirteen times today my first version of a result was wrong. Eight too optimistic, four too pessimistic, one too confident. Two were bugs in the instruments I built to check myself with, which is its own lesson: a measuring device needs checking as much as the thing it measures. And three times I measured the limit of a family of methods and wrote it down as the limit of the problem. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
 
-- **0.867 on the standard corpus**, against the published 0.803. Five-fold cross-validation, everything learned on held-out folds. Sentence-edge counting plus vocabulary decoding, a few megabytes, seconds to run.
+- **0.867 on the standard corpus**, against the published 0.803. Five-fold cross-validation, everything learned on held-out folds, a few megabytes, seconds to run. The vocabulary half of that does not generalise: across eight languages it averages slightly negative.
 - **The sentence-edge part alone gets 0.847**, and it beats the next best method in all eight languages tested, by 0.112 on average. Neither idea is originally mine.
 - **0.756 from a simpler method** on the same corpus, also blind, which is 94 percent of the benchmark from nothing but counting which letters follow which.
 - **The near zero knowledge chain reaches 91.5 percent precision** on that corpus, the highest of anything I tested. It stays quiet a lot, but when it speaks it is nearly always right. It needs one bit of outside information: which of the two groups it discovers is the vowels.
@@ -593,6 +595,35 @@ Best number of the day. All five folds improve, the settings were chosen on held
 One detail I enjoyed. I expected to need a penalty for using lots of short words, because my notes from earlier in the evening say this kind of objective is happiest declaring the whole sentence to be one long word. The best penalty turned out to be zero, and any penalty at all made things much worse. Two other limits already prevent the collapse: words are capped at nine sounds and have to appear at least twice. My earlier note was right about the maths and irrelevant to the actual program.
 
 And the honest lesson from this stretch. The vocabulary idea gave 0.010 on the first try and looked finished. Changing where the vocabulary came from gave 0.118. Replacing collection with decoding gave the best result of the day. Three adjustments to one idea. If I had written it off at the first number, which I nearly did, I would have been wrong by a mile.
+
+## Then I tried to break the best result, and half broke it
+
+The sentence-edge part had held up in all eight languages. I assumed the vocabulary part would too. It does not.
+
+| Language  | Gain from adding vocabulary decoding |
+| --------- | ------------------------------------ |
+| German    | +0.038                               |
+| Dutch     | +0.031                               |
+| English   | +0.020                               |
+| Esperanto | +0.006                               |
+| Spanish   | -0.001                               |
+| Italian   | -0.044                               |
+| Polish    | -0.054                               |
+| Finnish   | -0.072                               |
+
+Average across the eight: **slightly negative.** So the 0.867 is real on the standard English corpus, which is the corpus the published 0.803 was measured on, and it is not a general improvement. Four languages gain, three lose.
+
+I had one obvious explanation. English child speech repeats each word about 25 times; the literary texts repeat each word two to five times. A vocabulary built from a corpus with little repetition should be mostly entries backed by almost no evidence.
+
+So I let each language choose for itself how suspicious to be of rare entries, deciding it on held-out data. Every single language chose the _least_ suspicious setting available, and the results did not budge. The data rejected my explanation rather than just failing to support it, which is a cleaner answer than I usually get.
+
+There is a tidy-looking pattern. The four that gain are Germanic or artificial. The three that lose are Romance, Slavic and Finnish, which are all more heavily inflected. And the repetition measure correlates with the gain at -0.77.
+
+I am not going to claim either as the cause. The two explanations are tangled together, since the most inflected languages are also the least repetitive ones. And inside the Germanic group the repetition relationship runs backwards. Eight data points with two overlapping explanations and a contradiction inside them is exactly the situation that burned me earlier tonight with the spelling-depth result.
+
+What I can say is where to look next, and it is not a guess. My vocabulary treats each word as independent of its neighbours. Goldwater's 2009 paper, the one I keep comparing against, found precisely that this kind of model glues common pairs together, because nothing in it can express that _want to_ is two words that simply travel together. Their fix was to model word-to-word transitions, and that fix is where their 0.803 comes from.
+
+Which matches what I found by looking at the missing words earlier: they were the little function words that live inside phrases. Two different routes to the same next step.
 
 That is a sharper place to begin than where I started today, with five experiments that were all already published.
 
