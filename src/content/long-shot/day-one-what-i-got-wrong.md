@@ -286,7 +286,11 @@ So I redid it honestly. Pick the settings using a completely different text, Eng
 
 Small. Two of the three had no inflation at all. But the honest number is **0.756**, not 0.765, and I have corrected it everywhere.
 
-The thing worth remembering is why this one hid for so long. The mistakes I caught quickly were unusual things I had just invented. This one survived because it looked like completely normal code.
+So I went looking for the same thing everywhere else. It is in nine files, because writing a loop over settings and keeping the best is just how these scripts get written. Mostly it does not matter: when you compare two things and cheat equally on both, the cheating cancels, and I checked that on the sounds versus spelling comparison.
+
+But that audit found something worse than what it went looking for. Re-running the comparison on properly cleaned text gave 2.2, 6.3 and 13.5 times, against the 2.85 to 4.77 I had been quoting all evening. Same code, different corpus cleaning. So I have six measurements that all say sounds beat spelling and a factor that swings by three times on choices that should not matter. The direction is real. The number never was.
+
+Two things worth keeping from this. Run the audit even when the reason for running it turns out to be wrong. And notice why this mistake hid for so long: the ones I caught quickly were unusual things I had just invented, while this one survived because it looked like completely normal code.
 
 ## Would any of this survive real audio?
 
@@ -387,7 +391,7 @@ Then I swapped the halves and did it again. 0.837 and 0.838. Both halves picked 
 
 The caveats. Each run scores half the corpus where the published number is on all of it, so it is a close comparison and not an identical one. The idea belongs to Aslin and Christiansen, not me. And it leans hard on knowing where sentences end, which is given in the standard setup that everyone uses, so it is not cheating, but it is doing more of the work here than in other methods.
 
-## And it fails the test I built it for
+### It also fails the test I built it for
 
 I did not build this to top a leaderboard. I built it because I wanted a signal that would break differently under noise.
 
@@ -396,18 +400,6 @@ It is the worst one I have tested. At 10 percent errors it drops 60 percent and 
 So the best method on clean text is the most fragile one under noise. Which means the leaderboard I have been chasing all day is a poor guide to what would survive real audio.
 
 That is a more useful thing to know than the 0.838.
-
-## One more, found by auditing instead of experimenting
-
-Near the end I went looking for more of that same test-set cheating in my other code. It is in nine files, because writing a loop over settings and keeping the best is just how these scripts get written.
-
-For most of them it does not matter. When you are comparing two things and cheat equally on both, the cheating cancels out. I checked that on the sounds versus spelling comparison, and it does cancel: picking settings honestly gives the same answer to two decimal places.
-
-But the audit found something worse than what it was looking for. When I re-ran that comparison on the properly cleaned text, the numbers came out as 2.2, 6.3 and 13.5 times, against the 2.85 to 4.77 I had been quoting all night. Same code, different corpus cleaning.
-
-So I have six measurements that all say sounds beat spelling, and a factor that moves around by three times depending on choices that should not matter that much. The direction is real. The number was never real, and I had been treating a range as though it were a measurement.
-
-That is the argument for running audits even when your reason for running them turns out to be wrong. I went looking for cheating, found none worth worrying about, and found a bigger problem standing next to it.
 
 ## What actually stands at the end of the day
 
@@ -436,29 +428,21 @@ It is not. A correct prediction on a small sample is still a small sample.
 
 ## What is next
 
-The puzzle thread is dead as I framed it and I am not going to grind at it.
+The puzzle thread is dead as I framed it and I am not going to grind at it. The sound thread is where everything worked.
 
-The sound thread is where everything worked, so that gets the weight.
+I thought I knew where to start. One component looked like it was carrying everything, the step that decides which symbols are vowels. It flips rather than degrades under noise, and it explains most of the difference between languages by failing on those that spell single sounds with letter pairs.
 
-But the honest summary of the day is narrower than I wanted. Cheap counting methods do a surprising amount, on a laptop, in seconds, with no neural network anywhere. They do it **given a good representation**. Nothing I ran today could produce one, and the one attempt to self-repair recovered a seventh of the gap.
+So I fixed it. Replaced the yes-or-no decision with a score that cannot flip. It worked exactly as intended and the overall result did not move.
 
-So the real problem is getting from raw audio to a good set of sounds without being handed it. That is what every result today quietly skipped.
+Then I ran the test I should have run first. I handed the program the correct vowels for free, under noise. If knowing them perfectly is worth a lot, the component matters. It was worth **0.007**.
 
-I thought I knew where to start. One small component looked like it was carrying everything: the step that decides which symbols are vowels. It flips rather than degrades under noise, and it explains most of the difference between languages by failing on those that spell single sounds with letter pairs.
+Four experiments on something one test would have cleared in five minutes. Find out how much a fix could possibly be worth before spending the evening building it.
 
-So I fixed it. Replaced the yes-or-no decision with a score that cannot flip. It worked exactly as intended and the overall result did not move at all.
+The real answer is bleaker and more useful. Four different arrangements of these parts land in the same place, and the single best method on its own matches the best combination of them. Every one of these signals is computed from the same counts, so when noise damages the counts it damages all of them together. Combining several broken versions of the same measurement gets you nothing.
 
-Then I ran the test I should have run first. I simply handed the program the correct vowels, for free, under noise. If knowing the vowels perfectly is worth a lot, that tells you the component matters. It was worth **0.007**.
+So the thing to look for is not a better arrangement of these parts. It is a signal that breaks differently when the input is corrupted. Something built on how long things take, or what repeats across many sentences, rather than what sits next to what.
 
-Four experiments on a component that one test would have cleared in five minutes. The lesson is to find out how much a fix could possibly be worth before spending the evening building it.
-
-That same ablation turned up something I was not looking for. Switching off the filtering step, which had been on in every noise experiment all day, makes things noticeably better once there is real noise. It helps on clean input and hurts on dirty input.
-
-But the real answer is bleaker and more useful. Four different arrangements of these parts all land in the same place, and the single best method on its own matches the best combination of them. That is because every one of these signals is computed from the same counts, so when noise damages the counts it damages all of them together. Combining several broken versions of the same measurement gets you nothing.
-
-So the thing to look for is not a better arrangement of these parts. It is a signal that breaks in a different way when the input is corrupted. Something using how long things take, or what repeats across many sentences, rather than what sits next to what.
-
-That is a smaller and sharper place to start than where I began today, with five experiments that were all already published.
+That is a sharper place to start than where I began today, with five experiments that were all already published.
 
 ## Sources
 
