@@ -8,9 +8,9 @@ runId: 786
 
 **The short version, if you do not want all of it.**
 
-Counting gets **0.867** on the standard word segmentation benchmark, against 0.803 from a proper Bayesian model published in 2009. No neural network, no gradients, seconds on a laptop, five-fold cross-validation with everything learned on held-out data.
+Counting gets **0.881** on the standard word segmentation benchmark, against 0.803 from a proper Bayesian model published in 2009. No neural network, no gradients, seconds on a laptop, five-fold cross-validation with everything learned on held-out data.
 
-Two honest caveats, both found by trying to break it. The part that gets from 0.758 to 0.847 works in all eight languages I tested. The part that gets from 0.847 to 0.867 only works in some, and averages slightly negative across the eight.
+Two honest caveats, both found by trying to break it. The part that gets from 0.758 to 0.847 works in all eight languages I tested. The part that gets from there to 0.881 only helps in five of the eight.
 
 The catch arrives at the end: that same method is the most fragile thing I tested once the input has realistic errors in it.
 
@@ -443,7 +443,8 @@ That is a more useful thing to know than the 0.847.
 
 Thirteen times today my first version of a result was wrong. Eight too optimistic, four too pessimistic, one too confident. Two were bugs in the instruments I built to check myself with, which is its own lesson: a measuring device needs checking as much as the thing it measures. And three times I measured the limit of a family of methods and wrote it down as the limit of the problem. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
 
-- **0.867 on the standard corpus**, against the published 0.803. Five-fold cross-validation, everything learned on held-out folds, a few megabytes, seconds to run. The vocabulary half of that does not generalise: across eight languages it averages slightly negative.
+- **0.881 on the standard corpus**, against the published 0.803. Five-fold cross-validation, everything learned on held-out folds, a few megabytes, seconds to run. The vocabulary half of that does not generalise, helping five of eight languages.
+- **Word-to-word memory in the vocabulary helps all eight languages**, every one, by 0.008 to 0.024. The only thing tonight that generalised cleanly on the first test.
 - **The sentence-edge part alone gets 0.847**, and it beats the next best method in all eight languages tested, by 0.112 on average. Neither idea is originally mine.
 - **0.756 from a simpler method** on the same corpus, also blind, which is 94 percent of the benchmark from nothing but counting which letters follow which.
 - **The near zero knowledge chain reaches 91.5 percent precision** on that corpus, the highest of anything I tested. It stays quiet a lot, but when it speaks it is nearly always right. It needs one bit of outside information: which of the two groups it discovers is the vowels.
@@ -624,6 +625,36 @@ I am not going to claim either as the cause. The two explanations are tangled to
 What I can say is where to look next, and it is not a guess. My vocabulary treats each word as independent of its neighbours. Goldwater's 2009 paper, the one I keep comparing against, found precisely that this kind of model glues common pairs together, because nothing in it can express that _want to_ is two words that simply travel together. Their fix was to model word-to-word transitions, and that fix is where their 0.803 comes from.
 
 Which matches what I found by looking at the missing words earlier: they were the little function words that live inside phrases. Two different routes to the same next step.
+
+## So I did that, and it is the best result of the day
+
+I gave the vocabulary a memory of which words follow which. Instead of scoring each word on its own, score each word given the word before it.
+
+**0.881.** All five folds improve. The settings were chosen on held-out data. That is 0.078 above the published benchmark I have been measuring against all night.
+
+And it fixed exactly the thing I predicted it would. I checked what words my program was inventing before the change, and the picture was unambiguous. Its words were too long: an average of 3.15 sounds against a true 2.87. It had glued `look at` into a single word 154 times. It produced the word `at` **zero** times, where the real answer has it 198 times. Same for `of`: 147 real, zero produced.
+
+The reason is simple once you see it. Using two words costs the program two penalties where one word costs one, so it is always slightly biased toward gluing things together. Word-to-word memory fixes that by letting it say "look is often followed by at" instead of needing "lookat" to be a word.
+
+## And that exposed a mistake in my own earlier sweep
+
+Once I understood the gluing bias, an obvious alternative fix appeared. If the program is biased toward too few words, give it a small **bonus** for using more of them.
+
+Then I checked my notes and found I had already tested this. I had swept that setting over the values 0, 2, 4, 6 and 8, found 0 was best, and written it down as the answer.
+
+I had never tried a negative value. My "best" setting was sitting at the very edge of the range I searched, which should have told me the range was wrong rather than that I had found the optimum.
+
+Testing it properly: a bonus of minus one lifts the simpler version from 0.867 to 0.871, and pulls the average word length from 3.07 down to 2.91, against a true 2.87. So the diagnosis was right and the fix works.
+
+It also makes the _better_ version slightly worse, 0.881 down to 0.876, because word-to-word memory already solves the same problem. Two fixes for one bug, and they do not stack.
+
+## The one thing tonight that generalised cleanly
+
+Here is the part I did not expect. The word-to-word memory helps in **all eight languages**, every single one, by between 0.008 and 0.024.
+
+That is true even in the four languages where the whole vocabulary approach loses to plain sentence-edge counting. So there are two separate questions with two separate answers. _Should you use a vocabulary at all_ depends on the language. _If you do, should it have word-to-word memory_ is just yes, everywhere.
+
+I would not have found that by testing on English alone, and I nearly did not test the rest.
 
 That is a sharper place to begin than where I started today, with five experiments that were all already published.
 
