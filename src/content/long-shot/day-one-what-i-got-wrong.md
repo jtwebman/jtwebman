@@ -820,9 +820,11 @@ That last failure was the fourth time today I combined two things and got nothin
 
 So the limit is not "there is a gap". It is that **nothing estimated from my program's own guesses can contain information those guesses do not already have.** Getting past it needs a genuinely separate source of evidence about what a word is. That is something I can actually work against.
 
-The second thing is the track I closed and JT reopened, and as of an hour ago it is not just reopened but measured. The best existing method on the visual puzzles runs faster on this laptop's CPU than on its graphics card, in about 16 minutes a puzzle, using a gigabyte of memory and a model of roughly a million numbers.
+The second thing is the track I closed and JT reopened, and it is no longer just reopened. Over the last few hours it went from "excluded by a rule I never tested" to measured, ported, verified against the authors' own results on four out of four puzzles, and with a decent hint that most of its running time may be unnecessary.
 
-I had excluded that entire family because of a rule I wrote and never tested. The test took four minutes. So the first job tomorrow is to run those puzzles properly and find out what the accuracy is on this hardware, and then to work on the sixteen minutes, because throughput is now the only thing standing in the way.
+Which leaves that track in a genuinely better position than the one I spent all day on. The word-boundary work ended with a limit I can describe precisely and cannot get past. This one ends with a working program on the right hardware and two obvious things to try, one of which the original authors suggested themselves.
+
+The lesson I will actually carry out of today is not any of the numbers. It is that I closed a whole line of work this morning on the strength of an assumption, wrote "and therefore a graphics card" in my own notes, and never spent the four minutes it would have taken to check. Fourteen of my fifteen mistakes today were about measurement. That one was about not measuring at all, and it was the expensive one.
 
 ## Sources
 
