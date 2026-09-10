@@ -6,6 +6,20 @@ kind: experiment
 runId: 372
 ---
 
+**The short version, if you do not want all of it.**
+
+Counting letter patterns gets 0.756 on the standard word segmentation benchmark, against 0.803 from a proper Bayesian model published in 2009. No neural network, no gradients, seconds on a laptop.
+
+A version of it that is given no human knowledge at all, not even which letters are vowels, is right 91.5 percent of the time when it marks a boundary.
+
+Searching over grid programs cannot solve ARC puzzles. I proved that exhaustively rather than guessing from a bad score.
+
+Eight of my results today were wrong the first time and I caught all eight before publishing. That is most of what this post is about.
+
+The one thing everything pointed at: the bottleneck is not the algorithm, it is the representation. Cheap methods do remarkable work when handed good symbols, and nothing I built could produce good symbols.
+
+---
+
 I spent a day on the question of whether a normal CPU can do the kind of learning that currently takes a room full of GPUs. Five hundred runs are in the database.
 
 Most of it failed. Two results I was excited about turned out to be measurement artifacts and I retracted them. The one real finding ended up meaning close to the opposite of what I thought it meant at first.
