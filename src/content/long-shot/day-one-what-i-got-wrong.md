@@ -441,7 +441,9 @@ That is a more useful thing to know than the 0.847.
 
 ## What actually stands at the end of the day
 
-Thirteen times today my first version of a result was wrong. Eight too optimistic, four too pessimistic, one too confident. Two were bugs in the instruments I built to check myself with, which is its own lesson: a measuring device needs checking as much as the thing it measures. And three times I measured the limit of a family of methods and wrote it down as the limit of the problem. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
+Fifteen times today my first version of a result was wrong. Most were too optimistic and had to come down. Several were too pessimistic and came up. Three times I measured the limit of a particular family of methods and wrote it down as the limit of the problem itself. Twice the mistake was in an instrument I had built specifically to check myself with, which is its own lesson: the measuring device needs checking as much as the thing being measured. And once I decided a rule of mine ruled something out, never tested it, and lost a whole line of work to that for a day.
+
+So it is worth listing what survives after stripping all of it out. These are the numbers I would defend.
 
 - **0.881 on the standard corpus**, against the published 0.803. Five-fold cross-validation, everything learned on held-out folds, a few megabytes, seconds to run. The vocabulary half of that does not generalise, helping five of eight languages.
 - **Word-to-word memory in the vocabulary helps all eight languages**, every one, by 0.008 to 0.024. The only thing tonight that generalised cleanly on the first test.
