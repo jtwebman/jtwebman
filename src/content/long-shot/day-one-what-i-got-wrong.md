@@ -10,7 +10,7 @@ runId: 372
 
 Counting letter patterns gets 0.756 on the standard word segmentation benchmark, against 0.803 from a proper Bayesian model published in 2009. No neural network, no gradients, seconds on a laptop.
 
-A version of it that is given no human knowledge at all, not even which letters are vowels, is right 91.5 percent of the time when it marks a boundary.
+A version of it that works out almost everything by counting, including which letters are vowels, is right 91.5 percent of the time when it marks a boundary. It needs exactly one bit of outside help, which I did not notice until late.
 
 Searching over grid programs cannot solve ARC puzzles. I proved that exhaustively rather than guessing from a bad score.
 
@@ -119,6 +119,8 @@ So I chained the whole thing together with nothing supplied by a human. Find the
 | The hand written 1988 linguistic rule | 0.534 |
 
 **Taking away every piece of human knowledge costs 7 percent.**
+
+Except it turned out later that I had not taken away every piece. More on that near the end.
 
 ## And then it turned around again
 
@@ -312,12 +314,28 @@ And the plan stands, just for a weaker reason. Before spending weeks on audio I 
 
 There is a lesson in this one that I did not enjoy. I spent the evening carefully auditing myself for ways I might be fooling myself into good results. Then I accepted a negative result that rested entirely on a noise model I made up in five minutes and never questioned. Being suspicious of good news is only half the job.
 
+## The zero knowledge claim needed one more correction
+
+Late on I went back to test how stable the vowel finder is, since the whole chain sits on it. Ten runs at each noise level instead of one.
+
+At 30 percent errors it gets the vowels right in 3 runs out of 10. Not degraded. **Flipped.** Every single run is either perfect or completely wrong, nothing in between.
+
+The reason is specific and quite interesting. The algorithm splits the alphabet into two groups, and that split survives the noise perfectly well. What breaks is deciding **which of the two groups is the vowels**. It gets the answer right and then puts the wrong label on it.
+
+I tried to fix it. Two other rules for choosing which group is which are completely stable under noise, right every time up to 40 percent errors. Then I checked them on the corpora that made me pick the original rule, and they fail badly there. One of them scores zero on the standard corpus. The original rule handles that one fine and dies under noise. A majority vote of all three does not help, because on the standard corpus two of the three are wrong together.
+
+So there is no cheap rule that gets this right everywhere.
+
+Which means my zero knowledge claim was slightly wrong. The chain works out everything by counting **except one single bit**: somebody has to say which of the two discovered groups is the vowels. One bit is not much. It is also not zero, and I said zero.
+
+The honest version is that the chain is free except for one bit, and that bit is currently supplied by a rule that is right in some situations and wrong in others.
+
 ## What actually stands at the end of the day
 
-Nine times today my first version of a result was wrong. Six were too optimistic, two too pessimistic, one too confident. One of them was a correction to an earlier correction. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
+Ten times today my first version of a result was wrong. Seven were too optimistic, two too pessimistic, one too confident. One was a correction to an earlier correction. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
 
 - **0.756 on the standard corpus**, against the published 0.803 from a proper Bayesian model in 2009. Settings picked on a different corpus, then run once, so nothing is tuned to the answer. Just counting letter patterns, in seconds, on a laptop. That is 94 percent of the benchmark.
-- **The zero knowledge chain reaches 91.5 percent precision** on that corpus, the highest of anything I tested. It stays quiet a lot, but when it does mark a boundary it is nearly always right.
+- **The near zero knowledge chain reaches 91.5 percent precision** on that corpus, the highest of anything I tested. It stays quiet a lot, but when it speaks it is nearly always right. It needs one bit of outside information: which of the two groups it discovers is the vowels.
 - **Speech sounds are more data efficient than spelling.** Six measurements, all agreeing on direction, ranging from 2.2 to 13.5 times. The direction is solid. The size is not, and I spent part of the night quoting a precise range I could not support.
 - **Whole grid program search cannot do ARC.** Proved exhaustively, not concluded from a low score.
 - **The chain helps in some languages and hurts in others and I do not know why.** Two explanations tested, both failed.
