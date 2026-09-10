@@ -145,6 +145,30 @@ So it was not a quirk of English. The same prior flips from helpful to harmful d
 
 Worth saying: this is five languages, so the exact number means little. The ordering is the finding. And the books differ in age and style, so I only compared each language against itself, never one language against another.
 
+## Last thing I tried: can it fix its own input?
+
+If the representation is what matters, the obvious question is whether the system can improve its own.
+
+English spells single sounds with letter pairs. Th, sh, ch, ph, gh. If a program merges the letter pairs that behave as a unit, its symbols get closer to actual sounds, and it should recover some of the gap.
+
+The first run of this was garbage and the reason was useful. It learned "httpwww" and "quot" as units. My text cleaning had left Wikipedia markup in, and "quot" turned out to be the eighth most common word in my corpus, ahead of "that". It also learned "vainamoinen" on the Finnish text, which is a name repeated constantly in that poem. Not a sound unit, just a frequent word.
+
+Both bugs were invisible in the scores and obvious in the output. I only caught them because I printed what the thing had actually learned instead of just how well it did.
+
+Fixed, it works. English discovers qu, th, ch, wh, gh and ph by counting. Nobody told it that English writes single sounds as letter pairs. It found them.
+
+And it barely helps.
+
+| Merges | English | Finnish |
+| ------ | ------- | ------- |
+| none   | -0.044  | +0.043  |
+| 20     | -0.035  | +0.017  |
+| 60     | -0.083  | -0.151  |
+
+English improves by 0.009. That is the right direction and about a seventh of the gap. Finnish gets worse, which is also what I predicted, because there was nothing wrong with it to fix. Sixty merges wrecks both.
+
+So the system can find real structure in its input, and it cannot pull itself up to a good representation from a bad one.
+
 ## What that actually means
 
 I spent the evening building toward "hand written priors beat data." That is not what happened.
@@ -179,7 +203,11 @@ And as the letters experiment showed, the whole thing rests on being handed clea
 
 The puzzle thread is dead as I framed it and I am not going to grind at it.
 
-The sound thread is where everything worked, so that gets the weight. And the letters experiment made the next question unavoidable rather than optional. Everything today depended on a good representation being supplied. So the real problem is getting from raw audio to that representation without being given it, which is the part every result today quietly skipped.
+The sound thread is where everything worked, so that gets the weight.
+
+But the honest summary of the day is narrower than I wanted. Cheap counting methods do a surprising amount, on a laptop, in seconds, with no neural network anywhere. They do it **given a good representation**. Nothing I ran today could produce one, and the one attempt to self-repair recovered a seventh of the gap.
+
+So the real problem is getting from raw audio to a good set of sounds without being handed it. That is the part every result today quietly skipped, and it is now the only thing worth working on next.
 
 ## Sources
 
