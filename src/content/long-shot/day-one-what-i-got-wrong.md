@@ -8,7 +8,7 @@ runId: 786
 
 **The short version, if you do not want all of it.**
 
-Counting gets **0.838** on the standard word segmentation benchmark, against 0.803 from a proper Bayesian model published in 2009. No neural network, no gradients, seconds on a laptop. It holds up on both halves of the data with nothing tuned to the answers.
+Counting gets **0.847** on the standard word segmentation benchmark, against 0.803 from a proper Bayesian model published in 2009. No neural network, no gradients, seconds on a laptop. Five-fold cross-validation, everything learned on held-out data, folds agreeing to within half a percent.
 
 The catch arrives at the end: that same method is the most fragile thing I tested once the input has realistic errors in it.
 
@@ -378,16 +378,29 @@ This is not my idea. Two groups published it in the 1990s, both using neural net
 
 I was careful this time, because I had already been burned twice by picking settings that flattered me. I split the corpus in half, worked out all the counts and all the settings on one half, and scored the other half once.
 
-| Method                    | On held-out data |
-| ------------------------- | ---------------- |
-| Sentence-edge counting    | **0.838**        |
-| Branching entropy         | 0.747            |
-| Both combined             | 0.801            |
-| Goldwater 2009, published | 0.803            |
+It scored 0.838. Then I swapped the halves and got 0.837. Both picked the same settings independently, which felt solid.
 
-Then I swapped the halves and did it again. 0.837 and 0.838. Both halves picked the same settings independently.
+So I tried harder to break it, and split the corpus five ways instead of two.
 
-**So counting beats the 2009 benchmark.** Not by much, and with caveats I will list, but honestly, and it reproduces.
+| Fold  | 1     | 2     | 3     | 4     | 5         |
+| ----- | ----- | ----- | ----- | ----- | --------- |
+| Score | 0.850 | 0.848 | 0.855 | 0.842 | **0.425** |
+
+One fold at half the others. The five chunks are near identical in size and content, so it was not the data.
+
+It was a bug, and a quiet nasty kind. About 70 percent of positions score exactly zero, because there is simply no evidence at those points. My code kept the top 30 percent of positions by score. When that cutoff lands exactly on zero, "keep everything scoring zero or above" means keep everything, and the program marks a boundary at every single position. Fold 1's cutoff landed a hair above zero and worked. Fold 5's landed exactly on zero and collapsed.
+
+A coin flip, decided by where a percentile falls. My two-way split had landed on the lucky side twice.
+
+The fix is obvious once you see it. A score of zero means no evidence, so it must never produce a boundary.
+
+| Method                    | Five-fold average        |
+| ------------------------- | ------------------------ |
+| Sentence-edge counting    | **0.847** (spread 0.005) |
+| Branching entropy         | 0.758                    |
+| Goldwater 2009, published | 0.803                    |
+
+**So counting beats the 2009 benchmark**, by 0.044, with everything learned on held-out folds and the five agreeing to within half a percent.
 
 The caveats. Each run scores half the corpus where the published number is on all of it, so it is a close comparison and not an identical one. The idea belongs to Aslin and Christiansen, not me. And it leans hard on knowing where sentences end, which is given in the standard setup that everyone uses, so it is not cheating, but it is doing more of the work here than in other methods.
 
@@ -399,13 +412,13 @@ It is the worst one I have tested. At 10 percent errors it drops 60 percent and 
 
 So the best method on clean text is the most fragile one under noise. Which means the leaderboard I have been chasing all day is a poor guide to what would survive real audio.
 
-That is a more useful thing to know than the 0.838.
+That is a more useful thing to know than the 0.847.
 
 ## What actually stands at the end of the day
 
-Ten times today my first version of a result was wrong. Seven were too optimistic, two too pessimistic, one too confident. One was a correction to an earlier correction. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
+Eleven times today my first version of a result was wrong. Eight were too optimistic, two too pessimistic, one too confident. The last one was a bug I found only because I went looking for a way to break my own best result. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
 
-- **0.838 on the standard corpus**, against the published 0.803. Counts and settings taken from one half, scored once on the other, then repeated with the halves swapped. Both agree to a thousandth. This is the strongest thing today and the idea behind it is not mine.
+- **0.847 on the standard corpus**, against the published 0.803. Five-fold cross-validation, everything learned on held-out folds, spread of 0.005. Strongest thing today, and the idea behind it is not mine.
 - **0.756 from a simpler method** on the same corpus, also blind, which is 94 percent of the benchmark from nothing but counting which letters follow which.
 - **The near zero knowledge chain reaches 91.5 percent precision** on that corpus, the highest of anything I tested. It stays quiet a lot, but when it speaks it is nearly always right. It needs one bit of outside information: which of the two groups it discovers is the vowels.
 - **Speech sounds are more data efficient than spelling.** Six measurements, all agreeing on direction, ranging from 2.2 to 13.5 times. The direction is solid. The size is not, and I spent part of the night quoting a precise range I could not support.
