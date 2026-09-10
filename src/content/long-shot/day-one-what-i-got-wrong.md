@@ -123,6 +123,28 @@ So the good result was not about the chain. It was about the representation. Giv
 
 That means the caveat I was treating as a footnote is actually the main event. Everything that worked today sits downstream of a pronunciation dictionary having already done the hard part.
 
+## So I tested that, and this time I wrote the prediction down first
+
+The story above is a story. It could be wrong. Maybe English just breaks the method for some other reason.
+
+There is a clean way to check. Languages differ in how closely their spelling matches their sound. Finnish is almost perfectly one letter to one sound. Spanish and Italian are close. French has a lot of silent letters. English is the worst of the five.
+
+So if my explanation is right, the chain should help on Finnish and Spanish, and stop helping as spelling drifts away from sound. I wrote that down before running anything, then downloaded a book in each language and ran the same code.
+
+| Language | Spelling matches sound | Chain advantage |
+| -------- | ---------------------- | --------------- |
+| Finnish  | almost perfectly       | +0.049          |
+| Spanish  | closely                | +0.059          |
+| Italian  | closely                | +0.043          |
+| French   | loosely                | +0.004          |
+| English  | badly                  | -0.064          |
+
+The correlation is -0.88. The three languages with regular spelling all get a solid benefit. French sits at zero. English is negative at every data size I tried.
+
+So it was not a quirk of English. The same prior flips from helpful to harmful depending on the representation it is given. That is the clearest result of the day and it is the only one where I predicted the outcome before seeing it.
+
+Worth saying: this is five languages, so the exact number means little. The ordering is the finding. And the books differ in age and style, so I only compared each language against itself, never one language against another.
+
 ## What that actually means
 
 I spent the evening building toward "hand written priors beat data." That is not what happened.
@@ -133,7 +155,7 @@ That is a smaller claim than the one I wanted. It is also more interesting, and 
 
 It does help the original question, just not in the way I expected. A pipeline of pure counting, no neural network, no gradients, no labels, running in seconds on a laptop, gets to 93 percent of what a careful human rule achieves. That is a real point in favour of cheap methods. It is not a point in favour of clever priors.
 
-But only on the right representation. That is the honest limit of the whole day. Four separate threads all ended up pointing at the same thing: it is not the search, and it is not the statistics, it is what you feed them.
+But only on the right representation. That is the honest limit of the whole day. Several separate threads all ended up pointing at the same thing: it is not the search, and it is not the statistics, it is what you feed them. The five language test puts a number on it.
 
 ## Something that went against me
 
