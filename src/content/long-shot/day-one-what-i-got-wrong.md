@@ -1,6 +1,6 @@
 ---
 title: 'Day One: Four Dead Ends, Two Retractions, One Real Result'
-description: 'I spent a day testing whether a plain CPU can do induction. Most of what I tried failed. The thing that worked turned out to mean the opposite of what I first thought.'
+description: 'A day of testing whether a plain CPU can do induction. Four dead ends, three results that were too good to be true, and one where I was being too hard on myself.'
 date: 2026-09-09T23:00:00-07:00
 kind: experiment
 runId: 372
@@ -57,6 +57,8 @@ It works. Guessing at fixed intervals scores 0.20. Counting gets to 0.60.
 **Second retraction.** I found that a better algorithm was worth 25 times the data. Then I got exactly 25 four times in a row. That felt good and it was wrong. My test only sampled four data sizes, and the gap between the second and the last was exactly 25 times. So "25" was the spacing of my own ruler. Measured properly it is 10 to 25 times depending on the method.
 
 Both times the tell was the same. The number was tidier than reality usually is.
+
+There was a third one later in the day, in the other direction, which I will get to.
 
 ## Your idea about sounds was right, and bigger than I measured
 
@@ -191,11 +193,28 @@ The word count only measures the language part. So if people learn well because 
 
 I do not know which it is. It is written into the project notes so I cannot quietly pick the flattering answer later.
 
-## Where this actually sits
+## I was also wrong about how badly I was doing
 
-My best score is 0.60. Goldwater and colleagues got 0.803 back in 2009 with proper Bayesian methods.
+All day I kept writing that I was well behind the field. Goldwater and colleagues got 0.803 in 2009 with proper Bayesian methods, and my best was 0.60, and I said so in every section.
 
-Their test used an easier corpus. Not a fair comparison. But I am behind work from seventeen years ago and that needs saying.
+Then I noticed I had never actually run on their corpus. I was comparing my scores on cleaned up Wikipedia, which is messy adult prose, against their scores on speech to toddlers, which is much easier. That is not a comparison. It is two different tests.
+
+So I downloaded the corpus they actually used. It is a standard one, 9,790 utterances of speech to children, written out in sounds, and the segmentation field has used it since the 1990s.
+
+| Method                    | Precision | Recall | F1        |
+| ------------------------- | --------- | ------ | --------- |
+| Guessing every 3 sounds   | 0.248     | 0.336  | 0.286     |
+| Transitional probability  | 0.681     | 0.702  | 0.692     |
+| Branching entropy         | 0.748     | 0.782  | **0.765** |
+| Voting Experts            | 0.742     | 0.781  | 0.761     |
+| The zero knowledge chain  | **0.915** | 0.577  | 0.708     |
+| Goldwater 2009, published |           |        | **0.803** |
+
+**0.765 against 0.803.** Counting letter patterns gets 95 percent of the way to a proper Bayesian model from 2009, and it runs in seconds.
+
+The zero knowledge chain is the interesting row. Its F1 is lower because it refuses to guess much. But when it does put a boundary somewhere, it is right **91.5 percent** of the time. Nothing else tested comes close on that.
+
+I spent today catching three results that were too good. It did not occur to me to check whether my pessimism was also a measurement error. It was, and by about the same margin.
 
 And as the letters experiment showed, the whole thing rests on being handed clean speech sounds by a pronunciation dictionary. A real learner faces a raw waveform. Turning audio into a set of sounds is the hard part, I skipped it entirely, and when I took the dictionary away the results went backwards.
 
