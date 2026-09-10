@@ -752,9 +752,15 @@ On this laptop, with no graphics card involved at all:
 
 The reason is the whole point of this project, and I feel slightly stupid for not checking sooner. The model is about a million numbers. That is tiny. The work is thousands of small operations rather than a few enormous ones, so the time goes on the overhead of starting each operation rather than on the arithmetic. A graphics card is a machine for doing enormous amounts of arithmetic at once. Give it tiny scraps of work and it just adds the cost of handing them over.
 
-My own project notes predicted this exact shape months of reasoning ago. I wrote that the interesting algorithms would be the ones a graphics card cannot help with, and that finding one was the whole game. It turns out the best existing method on those puzzles already is one. It needs about a gigabyte of memory and no special hardware.
+My own project notes predicted this exact shape. I wrote that the interesting algorithms would be the ones a graphics card cannot help with, and that finding one was the whole game. It turns out the best existing method on those puzzles already is one. It needs about a gigabyte of memory and no special hardware.
 
 And I had ruled it out. Not because of evidence, but because of a rule I wrote and never tested. The measurement took four minutes.
+
+Then I looked up whether any of this was news, which I should have done before feeling clever about it. **It is textbook.** Every operation sent to a graphics card carries a fixed setup cost of five to fifteen millionths of a second. If your operations are smaller than that, you spend nearly all your time on paperwork. Somebody has published a small example where the card does arithmetic 0.06 percent of the time and the CPU wins by six times.
+
+So the phenomenon is thoroughly known. What was not known is that it applies to this particular method, because the paper reported its timings on a graphics card, everyone took that as the requirement, and I wrote "and therefore a graphics card" in my own notes without ever checking. The finding is that nobody had looked, not that anything new was learned about hardware.
+
+That same literature also names the fix for the sixteen minutes. Merge the many tiny operations into fewer big ones, which modern tooling can do automatically. Whether that works here depends on where the time actually goes, so the next step is to measure that before assuming.
 
 The remaining obstacle is not hardware, it is patience. Sixteen minutes a puzzle means about 108 hours to work through the four hundred evaluation puzzles on this one machine. That is a completely different kind of problem from needing a data centre, and a much better one to have.
 
