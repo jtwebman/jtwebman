@@ -346,6 +346,22 @@ Which means my zero knowledge claim was slightly wrong. The chain works out ever
 
 The honest version is that the chain is free except for one bit, and that bit is currently supplied by a rule that is right in some situations and wrong in others.
 
+## Does any of this hold on a different problem?
+
+Everything so far is one task: finding where words end. If cheap counting only works there, it is a curiosity.
+
+So I tried a second, genuinely different task. Given text with no labels, sort the words into groups that correspond to nouns, verbs, adjectives and so on. Nobody tells the program what the categories are or how many words belong to each. It only gets to count which words appear next to which.
+
+Putting everything in one group scores 0.170. Counting gets to 0.503.
+
+Along the way I made it worse before I made it better. I added information about word endings, since -ing and -ed and -ly are strong clues in English. The score dropped from 0.434 to 0.353. That was a plain bug in how I combined two kinds of numbers, and fixing it took the score to 0.503. Worth mentioning because if I had stopped at the first result I would have written down "word endings do not help", which is nonsense.
+
+Now the comparison that matters. On finding word boundaries, counting got 94 percent of the way to a published benchmark. Here it gets about 77 percent of what published methods manage.
+
+So the claim holds up, but weakly. Counting does far better than nothing on both tasks. It just gets much closer to the state of the art on one than the other, which makes me think word boundaries are an unusually friendly problem for this kind of method rather than a typical one.
+
+Two things stop this being a fair fight, and I would rather say them than let the number stand unqualified. The strong method for the second task is itself a counting method, just a much more careful one, so I am really comparing sloppy counting to careful counting. And I picked my settings by looking at the answers again, the same mistake as before, so the honest score is somewhere below 0.503 and I have not measured where.
+
 ## What actually stands at the end of the day
 
 Ten times today my first version of a result was wrong. Seven were too optimistic, two too pessimistic, one too confident. One was a correction to an earlier correction. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
@@ -355,6 +371,7 @@ Ten times today my first version of a result was wrong. Seven were too optimisti
 - **Speech sounds are more data efficient than spelling.** Six measurements, all agreeing on direction, ranging from 2.2 to 13.5 times. The direction is solid. The size is not, and I spent part of the night quoting a precise range I could not support.
 - **Whole grid program search cannot do ARC.** Proved exhaustively, not concluded from a low score.
 - **The chain does badly in a language mostly when its vowel finder fails there**, which predicts the pattern at 0.66. Two earlier explanations failed. Two languages still do not fit.
+- **On a second, different task the same approach reaches about 77 percent of published methods**, against 94 percent on word boundaries. So the claim generalises, but weakly.
 - **It degrades substantially with realistic input errors**, holding about two thirds of its advantage at 30 percent sound-recognition error. My first version of this said it collapsed entirely, and that was a bad noise model.
 
 Those last two are not placeholders for something better. They are the honest state of it.
