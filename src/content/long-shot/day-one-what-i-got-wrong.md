@@ -8,7 +8,9 @@ runId: 786
 
 **The short version, if you do not want all of it.**
 
-Counting letter patterns gets 0.756 on the standard word segmentation benchmark, against 0.803 from a proper Bayesian model published in 2009. No neural network, no gradients, seconds on a laptop.
+Counting gets **0.838** on the standard word segmentation benchmark, against 0.803 from a proper Bayesian model published in 2009. No neural network, no gradients, seconds on a laptop. It holds up on both halves of the data with nothing tuned to the answers.
+
+The catch arrives at the end: that same method is the most fragile thing I tested once the input has realistic errors in it.
 
 A version of it that works out almost everything by counting, including which letters are vowels, is right 91.5 percent of the time when it marks a boundary. It needs exactly one bit of outside help, which I did not notice until late.
 
@@ -362,6 +364,39 @@ So the claim holds up, but weakly. Counting does far better than nothing on both
 
 Two things stop this being a fair fight, and I would rather say them than let the number stand unqualified. The strong method for the second task is itself a counting method, just a much more careful one, so I am really comparing sloppy counting to careful counting. And I picked my settings by looking at the answers again, the same mistake as before, so the honest score is somewhere below 0.503 and I have not measured where.
 
+## The last thing I tried was the best thing I found
+
+By this point I had a clear diagnosis. Every method I had been using is computed from the same counts of what follows what, so when the input gets corrupted they all break together, and combining broken versions of the same measurement gets you nothing.
+
+So I wanted a signal built on something else. There is an obvious one. The end of a sentence is always the end of a word. Nobody stops speaking halfway through a word. So the sounds that show up at the ends of sentences look like the sounds that show up at the ends of words, and you get that for free just from knowing where the sentences are.
+
+This is not my idea. Two groups published it in the 1990s, both using neural networks trained to predict sentence endings. All I did was the counting version.
+
+I was careful this time, because I had already been burned twice by picking settings that flattered me. I split the corpus in half, worked out all the counts and all the settings on one half, and scored the other half once.
+
+| Method                    | On held-out data |
+| ------------------------- | ---------------- |
+| Sentence-edge counting    | **0.838**        |
+| Branching entropy         | 0.747            |
+| Both combined             | 0.801            |
+| Goldwater 2009, published | 0.803            |
+
+Then I swapped the halves and did it again. 0.837 and 0.838. Both halves picked the same settings independently.
+
+**So counting beats the 2009 benchmark.** Not by much, and with caveats I will list, but honestly, and it reproduces.
+
+The caveats. Each run scores half the corpus where the published number is on all of it, so it is a close comparison and not an identical one. The idea belongs to Aslin and Christiansen, not me. And it leans hard on knowing where sentences end, which is given in the standard setup that everyone uses, so it is not cheating, but it is doing more of the work here than in other methods.
+
+## And it fails the test I built it for
+
+I did not build this to top a leaderboard. I built it because I wanted a signal that would break differently under noise.
+
+It is the worst one I have tested. At 10 percent errors it drops 60 percent and then flatlines, while the method it beats on clean input only drops 31 percent. It needs exact matches at sentence edges, and corrupting sounds destroys those immediately.
+
+So the best method on clean text is the most fragile one under noise. Which means the leaderboard I have been chasing all day is a poor guide to what would survive real audio.
+
+That is a more useful thing to know than the 0.838.
+
 ## One more, found by auditing instead of experimenting
 
 Near the end I went looking for more of that same test-set cheating in my other code. It is in nine files, because writing a loop over settings and keeping the best is just how these scripts get written.
@@ -378,7 +413,8 @@ That is the argument for running audits even when your reason for running them t
 
 Ten times today my first version of a result was wrong. Seven were too optimistic, two too pessimistic, one too confident. One was a correction to an earlier correction. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
 
-- **0.756 on the standard corpus**, against the published 0.803 from a proper Bayesian model in 2009. Settings picked on a different corpus, then run once, so nothing is tuned to the answer. Just counting letter patterns, in seconds, on a laptop. That is 94 percent of the benchmark.
+- **0.838 on the standard corpus**, against the published 0.803. Counts and settings taken from one half, scored once on the other, then repeated with the halves swapped. Both agree to a thousandth. This is the strongest thing today and the idea behind it is not mine.
+- **0.756 from a simpler method** on the same corpus, also blind, which is 94 percent of the benchmark from nothing but counting which letters follow which.
 - **The near zero knowledge chain reaches 91.5 percent precision** on that corpus, the highest of anything I tested. It stays quiet a lot, but when it speaks it is nearly always right. It needs one bit of outside information: which of the two groups it discovers is the vowels.
 - **Speech sounds are more data efficient than spelling.** Six measurements, all agreeing on direction, ranging from 2.2 to 13.5 times. The direction is solid. The size is not, and I spent part of the night quoting a precise range I could not support.
 - **Whole grid program search cannot do ARC.** Proved exhaustively, not concluded from a low score.
