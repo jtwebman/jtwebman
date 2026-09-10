@@ -222,7 +222,9 @@ So I downloaded the corpus they actually used. It is a standard one, 9,790 utter
 | The zero knowledge chain  | **0.915** | 0.577  | 0.708     |
 | Goldwater 2009, published |           |        | **0.803** |
 
-**0.765 against 0.803.** Counting letter patterns gets 95 percent of the way to a proper Bayesian model from 2009, and it runs in seconds.
+**0.765 against 0.803.** Counting letter patterns gets most of the way to a proper Bayesian model from 2009, and it runs in seconds.
+
+Except that number is slightly cheated, and I only caught it later. More on that below.
 
 The zero knowledge chain is the interesting row. Its F1 is lower because it refuses to guess much. But when it does put a boundary somewhere, it is right **91.5 percent** of the time. Nothing else tested comes close on that.
 
@@ -230,11 +232,31 @@ I spent today catching three results that were too good. It did not occur to me 
 
 And as the letters experiment showed, the whole thing rests on being handed clean speech sounds by a pronunciation dictionary. A real learner faces a raw waveform. Turning audio into a set of sounds is the hard part, I skipped it entirely, and when I took the dictionary away the results went backwards.
 
+## I caught myself doing the same thing twice
+
+Late in the evening I went to build a better segmenter, and checking the prior work first saved me hours. It turns out the obvious approach has a proven flaw: the thing it is trying to minimise is smallest when you do not split the text at all. Those models only produce boundaries because of a quirk in how they search, not because their goal wants boundaries. I would have spent hours building something that cannot work.
+
+But reading around that sent me back to my own code, where I found I had made the same mistake I had caught an hour earlier.
+
+When I ran the 0.765, I had tried eight different settings and reported the best one. But I picked the best one by looking at the answers. That is the exact thing I had just retracted the 0.813 for. I did not notice, because writing a loop over settings and keeping the best is just how everyone writes that code. It does not look like cheating. It looks like a for loop.
+
+So I redid it honestly. Pick the settings using a completely different text, English Wikipedia, then run once on the test corpus without looking.
+
+| Method                   | Setting picked elsewhere | Score, blind | Score, cheating | Difference |
+| ------------------------ | ------------------------ | ------------ | --------------- | ---------- |
+| Transitional probability | order 2                  | 0.692        | 0.692           | none       |
+| Mutual information       | order 2                  | 0.690        | 0.690           | none       |
+| Branching entropy        | order 3                  | **0.756**    | 0.765           | 0.009      |
+
+Small. Two of the three had no inflation at all. But the honest number is **0.756**, not 0.765, and I have corrected it everywhere.
+
+The thing worth remembering is why this one hid for so long. The mistakes I caught quickly were unusual things I had just invented. This one survived because it looked like completely normal code.
+
 ## What actually stands at the end of the day
 
-Six times today my first version of a result was wrong. Four were too optimistic, one too pessimistic, one too confident. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
+Seven times today my first version of a result was wrong. Five were too optimistic, one too pessimistic, one too confident. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
 
-- **0.765 on the standard corpus**, against the published 0.803 from a proper Bayesian model in 2009. No tuning, no picking the best combination afterwards. Just counting letter patterns, in seconds, on a laptop. That is 95 percent of the benchmark.
+- **0.756 on the standard corpus**, against the published 0.803 from a proper Bayesian model in 2009. Settings picked on a different corpus, then run once, so nothing is tuned to the answer. Just counting letter patterns, in seconds, on a laptop. That is 94 percent of the benchmark.
 - **The zero knowledge chain reaches 91.5 percent precision** on that corpus, the highest of anything I tested. It stays quiet a lot, but when it does mark a boundary it is nearly always right.
 - **Speech sounds are 2.85 to 4.77 times more data efficient than spelling.** Measured properly after a sloppier version said 2.
 - **Whole grid program search cannot do ARC.** Proved exhaustively, not concluded from a low score.
