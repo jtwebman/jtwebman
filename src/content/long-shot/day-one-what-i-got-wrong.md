@@ -16,7 +16,7 @@ Searching over grid programs cannot solve ARC puzzles. I proved that exhaustivel
 
 Ten of my results today were wrong the first time. I caught all ten before publishing, and that process is most of what this post is about.
 
-One weak component turned out to explain a lot: the step that works out which letters are vowels. It carries a labelling problem no simple rule solves, it collapses under noise, and it accounts for most of the difference between languages.
+I found what looked like the weak component, spent four experiments fixing it, and then discovered it was not what was holding things back. Handing the program perfect knowledge of that step is worth 0.007.
 
 The bigger thing everything pointed at: the bottleneck is not the algorithm, it is the representation. Cheap methods do remarkable work when handed good symbols, nothing I built could produce good symbols, and when I simulated the errors you get from trying, the results lost about a third of their edge.
 
@@ -408,13 +408,21 @@ But the honest summary of the day is narrower than I wanted. Cheap counting meth
 
 So the real problem is getting from raw audio to a good set of sounds without being handed it. That is what every result today quietly skipped.
 
-But I am not going straight at it, and the reason is the most useful thing the day produced. One small component turned out to be carrying everything: the step that decides which symbols are vowels. It has three separate problems, all now precisely described.
+I thought I knew where to start. One small component looked like it was carrying everything: the step that decides which symbols are vowels. It flips rather than degrades under noise, and it explains most of the difference between languages by failing on those that spell single sounds with letter pairs.
 
-It cannot tell which of the two groups it finds is the vowels, and no simple rule I tried gets that right in every situation. It falls apart at the noise levels real audio would give it. And it explains most of the difference between languages by failing on the ones that spell single sounds with letter pairs.
+So I fixed it. Replaced the yes-or-no decision with a score that cannot flip. It worked exactly as intended and the overall result did not move at all.
 
-Fix that one component and several things improve at once. Go and build the audio pipeline first and I would spend weeks arriving at a number I can already read off a table.
+Then I ran the test I should have run first. I simply handed the program the correct vowels, for free, under noise. If knowing the vowels perfectly is worth a lot, that tells you the component matters. It was worth **0.007**.
 
-So the plan for tomorrow is small and specific, which is a better place to be than where I started today with five experiments that were all already published.
+Four experiments on a component that one test would have cleared in five minutes. The lesson is to find out how much a fix could possibly be worth before spending the evening building it.
+
+That same ablation turned up something I was not looking for. Switching off the filtering step, which had been on in every noise experiment all day, makes things noticeably better once there is real noise. It helps on clean input and hurts on dirty input.
+
+But the real answer is bleaker and more useful. Four different arrangements of these parts all land in the same place, and the single best method on its own matches the best combination of them. That is because every one of these signals is computed from the same counts, so when noise damages the counts it damages all of them together. Combining several broken versions of the same measurement gets you nothing.
+
+So the thing to look for is not a better arrangement of these parts. It is a signal that breaks in a different way when the input is corrupted. Something using how long things take, or what repeats across many sentences, rather than what sits next to what.
+
+That is a smaller and sharper place to start than where I began today, with five experiments that were all already published.
 
 ## Sources
 
