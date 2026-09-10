@@ -8,7 +8,7 @@ runId: 786
 
 **The short version, if you do not want all of it.**
 
-Counting gets **0.847** on the standard word segmentation benchmark, against 0.803 from a proper Bayesian model published in 2009. No neural network, no gradients, seconds on a laptop. Five-fold cross-validation, everything learned on held-out data, folds agreeing to within half a percent.
+Counting gets **0.847** on the standard word segmentation benchmark, against 0.803 from a proper Bayesian model published in 2009. No neural network, no gradients, seconds on a laptop. Five-fold cross-validation, everything learned on held-out data, and it beats the alternative in all eight languages I tried it on.
 
 The catch arrives at the end: that same method is the most fragile thing I tested once the input has realistic errors in it.
 
@@ -404,6 +404,29 @@ The fix is obvious once you see it. A score of zero means no evidence, so it mus
 
 The caveats. Each run scores half the corpus where the published number is on all of it, so it is a close comparison and not an identical one. The idea belongs to Aslin and Christiansen, not me. And it leans hard on knowing where sentences end, which is given in the standard setup that everyone uses, so it is not cheating, but it is doing more of the work here than in other methods.
 
+### And it works in every language I tried
+
+One corpus is one corpus, so I ran the same five-fold test on seven more languages, taking sentence boundaries from punctuation.
+
+| Language  | Sentence-edge | Branching entropy | Gap        |
+| --------- | ------------- | ----------------- | ---------- |
+| Finnish   | 0.609         | 0.418             | **+0.191** |
+| Polish    | 0.631         | 0.449             | **+0.181** |
+| Spanish   | 0.738         | 0.601             | +0.137     |
+| Esperanto | 0.750         | 0.624             | +0.126     |
+| Dutch     | 0.741         | 0.642             | +0.099     |
+| English   | 0.847         | 0.758             | +0.089     |
+| Italian   | 0.607         | 0.567             | +0.039     |
+| German    | 0.640         | 0.604             | +0.036     |
+
+Eight for eight. And English, the one I developed it on, is only sixth of the eight, which is the opposite of what tuning to your own corpus looks like.
+
+The Polish row is my favourite thing from the whole day. Polish was the **worst** language for the vowel-based method, at minus 0.168, because Polish writes single sounds as letter pairs and the vowel finder produces garbage there. It is the **second best** language for this one.
+
+The reason is that this method never looks for vowels. It only counts which sound patterns show up at the ends of sentences. So it walks straight past the broken component I had spent four experiments trying to repair, and which the oracle test then showed was not even what was holding things back.
+
+I did not fix that problem. I went around it. That turned out to be worth more than fixing it would have been.
+
 ### It also fails the test I built it for
 
 I did not build this to top a leaderboard. I built it because I wanted a signal that would break differently under noise.
@@ -418,7 +441,7 @@ That is a more useful thing to know than the 0.847.
 
 Eleven times today my first version of a result was wrong. Eight were too optimistic, two too pessimistic, one too confident. The last one was a bug I found only because I went looking for a way to break my own best result. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
 
-- **0.847 on the standard corpus**, against the published 0.803. Five-fold cross-validation, everything learned on held-out folds, spread of 0.005. Strongest thing today, and the idea behind it is not mine.
+- **0.847 on the standard corpus**, against the published 0.803. Five-fold cross-validation, everything learned on held-out folds, spread of 0.005. It beats the next best method in all eight languages tested, by 0.112 on average. Strongest thing today, and the idea behind it is not mine.
 - **0.756 from a simpler method** on the same corpus, also blind, which is 94 percent of the benchmark from nothing but counting which letters follow which.
 - **The near zero knowledge chain reaches 91.5 percent precision** on that corpus, the highest of anything I tested. It stays quiet a lot, but when it speaks it is nearly always right. It needs one bit of outside information: which of the two groups it discovers is the vowels.
 - **Speech sounds are more data efficient than spelling.** Six measurements, all agreeing on direction, ranging from 2.2 to 13.5 times. The direction is solid. The size is not, and I spent part of the night quoting a precise range I could not support.
