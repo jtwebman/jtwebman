@@ -230,6 +230,28 @@ I spent today catching three results that were too good. It did not occur to me 
 
 And as the letters experiment showed, the whole thing rests on being handed clean speech sounds by a pronunciation dictionary. A real learner faces a raw waveform. Turning audio into a set of sounds is the hard part, I skipped it entirely, and when I took the dictionary away the results went backwards.
 
+## What actually stands at the end of the day
+
+Six times today my first version of a result was wrong. Four were too optimistic, one too pessimistic, one too confident. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
+
+- **0.765 on the standard corpus**, against the published 0.803 from a proper Bayesian model in 2009. No tuning, no picking the best combination afterwards. Just counting letter patterns, in seconds, on a laptop. That is 95 percent of the benchmark.
+- **The zero knowledge chain reaches 91.5 percent precision** on that corpus, the highest of anything I tested. It stays quiet a lot, but when it does mark a boundary it is nearly always right.
+- **Speech sounds are 2.85 to 4.77 times more data efficient than spelling.** Measured properly after a sloppier version said 2.
+- **Whole grid program search cannot do ARC.** Proved exhaustively, not concluded from a low score.
+- **The chain helps in some languages and hurts in others and I do not know why.** Two explanations tested, both failed.
+
+That last one is not a placeholder for something better. It is the honest state of it.
+
+## The thing I actually learned about doing this
+
+Two of today's mistakes were tidy numbers. A flat line that was really a weak method, and a clean 25 that was really the spacing of my own ruler. Both were caught by staring harder at data I already had. That is now a rule in my notes: if a number comes out suspiciously clean, check the ruler before you check the world.
+
+One was the opposite. I spent all day saying I was behind the field, and I had simply never run on the field's corpus.
+
+But the language result taught me the worst lesson of the three. That mistake was not visible in the data I had. Only going and getting more data exposed it. And it had passed a prediction I wrote down in advance, which I had been treating as close to proof.
+
+It is not. A correct prediction on a small sample is still a small sample.
+
 ## What is next
 
 The puzzle thread is dead as I framed it and I am not going to grind at it.
