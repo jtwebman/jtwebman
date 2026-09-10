@@ -64,7 +64,9 @@ There was a third one later in the day, in the other direction, which I will get
 
 JT suggested that a child hears sounds long before they see spelling, and that English spelling is a mess, so I should try running everything on speech sounds instead of letters.
 
-First measurement said sounds were twice as efficient. That was another ruler problem, on a doubling grid. Measured finely, sounds need **2.85 to 4.77 times fewer words** than letters to reach the same accuracy.
+First measurement said sounds were twice as efficient. That was another ruler problem, on a doubling grid. Measured on a finer grid, sounds needed 2.85 to 4.77 times fewer words than letters.
+
+Later in the night I re-ran that on a properly cleaned corpus and got 2.2, 6.3 and 13.5 depending on the method. So the honest version is that sounds win every time I measure it, six measurements out of six, and I cannot tell you by how much. Somewhere between about two and thirteen times. More on that at the end.
 
 He also said the emphasis matters, not just the sounds. I had thrown that away. English marks which syllable is stressed, and I had stripped those marks out.
 
@@ -254,15 +256,27 @@ The thing worth remembering is why this one hid for so long. The mistakes I caug
 
 ## What actually stands at the end of the day
 
-Seven times today my first version of a result was wrong. Five were too optimistic, one too pessimistic, one too confident. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
+Eight times today my first version of a result was wrong. Six were too optimistic, one too pessimistic, one too confident. So it is worth listing what is left after stripping all of that out. These are the numbers I would defend.
 
 - **0.756 on the standard corpus**, against the published 0.803 from a proper Bayesian model in 2009. Settings picked on a different corpus, then run once, so nothing is tuned to the answer. Just counting letter patterns, in seconds, on a laptop. That is 94 percent of the benchmark.
 - **The zero knowledge chain reaches 91.5 percent precision** on that corpus, the highest of anything I tested. It stays quiet a lot, but when it does mark a boundary it is nearly always right.
-- **Speech sounds are 2.85 to 4.77 times more data efficient than spelling.** Measured properly after a sloppier version said 2.
+- **Speech sounds are more data efficient than spelling.** Six measurements, all agreeing on direction, ranging from 2.2 to 13.5 times. The direction is solid. The size is not, and I spent part of the night quoting a precise range I could not support.
 - **Whole grid program search cannot do ARC.** Proved exhaustively, not concluded from a low score.
 - **The chain helps in some languages and hurts in others and I do not know why.** Two explanations tested, both failed.
 
 That last one is not a placeholder for something better. It is the honest state of it.
+
+## One more, found by auditing instead of experimenting
+
+Near the end I went looking for more of that same test-set cheating in my other code. It is in nine files, because writing a loop over settings and keeping the best is just how these scripts get written.
+
+For most of them it does not matter. When you are comparing two things and cheat equally on both, the cheating cancels out. I checked that on the sounds versus spelling comparison, and it does cancel: picking settings honestly gives the same answer to two decimal places.
+
+But the audit found something worse than what it was looking for. When I re-ran that comparison on the properly cleaned text, the numbers came out as 2.2, 6.3 and 13.5 times, against the 2.85 to 4.77 I had been quoting all night. Same code, different corpus cleaning.
+
+So I have six measurements that all say sounds beat spelling, and a factor that moves around by three times depending on choices that should not matter that much. The direction is real. The number was never real, and I had been treating a range as though it were a measurement.
+
+That is the argument for running audits even when your reason for running them turns out to be wrong. I went looking for cheating, found none worth worrying about, and found a bigger problem standing next to it.
 
 ## The thing I actually learned about doing this
 
