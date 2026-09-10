@@ -530,7 +530,27 @@ I have now made the same mistake three times tonight in the same area. Each time
 
 The real headroom is at least 0.28, not the 0.15 I reported, and the missing ingredient is a vocabulary. Which is not news. Every serious method in this field since the 1990s builds one. I just did not have one, and it took looking at actual examples rather than reasoning about it to see that.
 
-The encouraging bit: a list containing only words already seen during training scores 0.751, and that is something a program could plausibly build for itself. So tomorrow has a specific target. Build a vocabulary with no labels, by taking the boundaries the method is most sure about, collecting whatever sits between them, and repeating. Get from 0.661 to somewhere near 0.75.
+The encouraging bit: a list containing only words already seen during training scores 0.751, and that is something a program could plausibly build for itself.
+
+So I tried to build one. Take the boundaries the method is most sure about, collect whatever sits between them, keep the pieces that turn up often, use those to help find more boundaries, repeat.
+
+It went from 0.661 to **0.671**. Positive, and small. About a tenth of what a proper vocabulary would be worth.
+
+Getting even that took two wrong turns, and the second one is the reason I am writing this section rather than a different one.
+
+The first attempt made things worse, 0.613, which makes sense. My method is right about two thirds of the time, so a third of the pieces it collects are not words at all, and those then vote for the same wrong boundaries. Errors feeding themselves.
+
+I then tried only collecting from the boundaries it was most confident about. Six different settings. All of them still worse. At that point I was ready to write down that this approach does not work.
+
+Then I ran the control I should have run first. I checked what my method scores **on its own** when measured the way the new code measures things. Not 0.661. **0.603.** The two were using different rules for deciding how many boundaries to mark, and that difference alone was worth 0.058.
+
+So the vocabulary had been helping the whole time. I had changed two things at once and blamed the one I was interested in.
+
+That is the second time tonight I did exactly that. Earlier I compared my scores on hard text against published scores on easy text and concluded I was far behind the field. Same shape of mistake, four hours apart.
+
+Both are cheap to avoid and I now have a rule written down for it: before deciding an idea failed, run the version that changes only the plumbing.
+
+Tomorrow's target is a better vocabulary, since a two-thirds-accurate method cannot build one much better than itself. The most reliable evidence I have is the sentence-edge signal at 0.847, so seeding from there is the obvious first thing to bound.
 
 That is a sharper place to begin than where I started today, with five experiments that were all already published.
 
