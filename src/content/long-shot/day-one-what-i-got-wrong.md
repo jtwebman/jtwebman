@@ -779,7 +779,9 @@ Their repository happens to include their own results, so I could look up exactl
 | 017c7c7b | not solved                                                         | not solved    |
 | 025d127b | **solved**, they got it in one guess                               | **solved**    |
 
-Four for four. So the port is sound, on hardware the authors never touched and with three small patches to make their code run at all. The sixteen minutes describes a working program.
+Four for four. Then I ran four more that they solve easily, and all four of those came out solved too.
+
+So **eight for eight**. The port is sound, on hardware the authors never touched, with three small patches to make their code run at all. The sixteen minutes describes a working program.
 
 The 00d62c1b row is the one I like. They _do_ solve that puzzle, and my version correctly declines to count it, because their answer took 53 guesses and you only get two. A program that was simply broken would also have said "not solved" there, so it is not proof on its own, but getting the reason right is a good sign.
 
@@ -801,24 +803,27 @@ So it is a lead, not a finding. I ran more of them, choosing specifically the pu
 | 05269061 | step 276             | 320                 | 16 percent      |
 | 06df4c85 | step 581             | 581                 | 29 percent      |
 | 08ed6ac7 | step 475             | **1726**            | **86 percent**  |
+| 0962bcdd | step 264             | 264                 | 13 percent      |
 
-The fourth one killed the idea, and I am glad it arrived before I published the third.
+One of them killed the idea, and I am glad it arrived before I published the others.
 
 On 08ed6ac7 the right answer turns up at step 475, then **drops back out** of the running, and does not settle for good until step 1726. Stopping at 600 steps, which the first three puzzles would have happily allowed, throws that puzzle away.
 
-To keep all four you need 1,726 steps out of 2,000. That is a saving of about sixteen percent, which is to say nothing at all.
+To keep all five you need 1,726 steps out of 2,000. That is a saving of about fourteen percent, which is to say nothing much at all.
+
+There is one more oddity worth noting, because it means the two things I have been treating as one variable are not. The puzzle needing the most steps, 1,726 of them, is _not_ the slowest puzzle. It finished in under ten minutes, while another needing only 581 steps took nearly half an hour. Step count and wall-clock time are separate, and neither one predicts the other.
 
 So this claim has now been wrong three times in a row, and each version was the honest reading of the data I had:
 
 - one puzzle: "172 steps is enough, 108 hours becomes 9"
 - three puzzles: "600 steps is enough, 108 hours becomes 32"
-- four puzzles: "you need 1,726 steps, and there is no saving"
+- five puzzles: "you need 1,726 steps, and there is barely any saving"
 
 The mistake underneath all three is mine and it is embarrassing in a specific way. My own program prints two columns: when the answer first appears, and when it settles for good. Only the second one matters if you want to stop early, because an answer that turns up and then vanishes is not something you can stop on. I let the first, smaller, more encouraging number lead the story three separate times.
 
 What is left is a genuinely interesting fact rather than a speedup. **This method can find the right answer and then lose it again.** Which means any early stopping needs a signal that it is confident, not a step count. It happens to compute exactly such a signal already, since minimising description length is the whole point of it, and my program records that curve. That is the actual next experiment.
 
-Three puzzles is still three puzzles, and I picked them from the easy end on purpose.
+Five puzzles is still five puzzles, and I picked them from the easy end on purpose.
 
 The narrow honest version: **for the puzzles this method can solve comfortably, the answer arrives in the first tenth or so of the work.** Whether that makes the whole sweep cheaper depends on the mix across all four hundred, which I have not measured, and on being able to tell early that a puzzle is hopeless, which is a different and harder problem.
 
