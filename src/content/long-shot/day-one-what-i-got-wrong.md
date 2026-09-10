@@ -766,6 +766,35 @@ That same literature also names the fix for the sixteen minutes. Merge the many 
 
 The remaining obstacle is not hardware, it is patience. Sixteen minutes a puzzle means about 108 hours to work through the four hundred evaluation puzzles on this one machine. That is a completely different kind of problem from needing a data centre, and a much better one to have.
 
+## Then I checked it was actually computing the right thing
+
+A speed measurement on a broken program is worthless, so before believing the sixteen minutes I checked whether my version produces the same answers as the authors'.
+
+Their repository happens to include their own results, so I could look up exactly which puzzles they solved and how many guesses each took. I picked four puzzles, wrote down what should happen to each one **before** running anything, and then ran them properly.
+
+| Puzzle   | What should happen                                                 | What happened |
+| -------- | ------------------------------------------------------------------ | ------------- |
+| 007bbfb7 | not solved                                                         | not solved    |
+| 00d62c1b | not solved, because they needed 53 guesses and the rules allow two | not solved    |
+| 017c7c7b | not solved                                                         | not solved    |
+| 025d127b | **solved**, they got it in one guess                               | **solved**    |
+
+Four for four. So the port is sound, on hardware the authors never touched and with three small patches to make their code run at all. The sixteen minutes describes a working program.
+
+The 00d62c1b row is the one I like. They _do_ solve that puzzle, and my version correctly declines to count it, because their answer took 53 guesses and you only get two. A program that was simply broken would also have said "not solved" there, so it is not proof on its own, but getting the reason right is a good sign.
+
+## And then something that might make the sixteen minutes irrelevant
+
+While I was at it I recorded, for each puzzle, the step at which the correct answer first appeared and whether it stayed.
+
+For the one puzzle that got solved, the right answer showed up at **step 172** and stayed there for the remaining 1,828 steps.
+
+172 is nine percent of the training budget. If that held generally, working through all four hundred puzzles would take about **nine hours instead of 108**, without optimising anything at all. You would just stop early.
+
+I want to be careful here, because this is exactly the shape of thing I have been wrong about all day. **It is one puzzle.** It is also the easiest kind, the sort the authors solve on their first guess. The harder puzzles are precisely the ones you would expect to need more steps, and the paper presumably chose 2000 because some of them do.
+
+So it is a lead, not a finding. The proper test is to run the puzzles they solve easily and the ones they barely solve, and compare. That is running now.
+
 ## What is next
 
 Two things, and both are sharper than where I started this morning.
