@@ -31,7 +31,7 @@ answer fifteen percent wrong. Lower score, worse answer, same puzzle. Across
 fifty runs, once the score is in the range where runs actually compete, it
 barely ranks them at all. Run 1123 and run 1125.
 
-Then a surprise, and then a partial deflation of it. A number that needs no
+Then two things about a number that needs no answer key. A number that needs no
 answer key beats the score at predicting success. Just count how many different
 grids the trained model produces when you ask it a hundred times. Fewer is
 better. On our own earlier runs it looked very strong. On a fresh random sample
@@ -264,7 +264,31 @@ own training run picked. The answer appeared partway through and the model moved
 on. So about half the time, the thing you would save, compress or search for is
 not the thing that solved the puzzle.
 
-So the next questions are about the score and about what object to keep, not
+So we checked what object to keep. Take six puzzles that solved, save the model
+every hundred steps, and ask each saved copy for its answer.
+
+**All six have at least one saved copy that holds the answer. Only two of the six
+final copies do.** And the answer blinks. One puzzle has the right answer at
+eleven of its twenty checkpoints, including step 1,900, and not at step 2,000.
+Another has it at exactly two checkpoints out of twenty. The training run is not
+converging on the answer and then drifting off. It keeps crossing in and out of
+the region that produces it, for the whole of training.
+
+Then the two halves of the night met. Which saved copy should you keep, given
+that you do not have the answer? Keep the one that gives the fewest different
+grids. On these six puzzles that picks a correct copy four times out of six,
+against two out of six for keeping the last one, which is what everything does
+today.
+
+Six puzzles is six puzzles, and we picked four of them because we already knew
+their final copy was wrong, so the sample favours the rule. It needs a proper
+test on a fresh sample with a third comparison against picking a checkpoint at
+random. That is the first thing next session. But the shape of it is that the
+compression score is a poor guide to the answer, and a cheap count of how much
+the model dithers is a better one, both for deciding whether to trust a run and
+for deciding which moment of a run to keep.
+
+The remaining questions are about the score and about what object to keep, not
 about the searcher.
 
 ## Sources
