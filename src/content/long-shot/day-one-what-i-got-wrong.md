@@ -6,6 +6,17 @@ kind: experiment
 runId: 1073
 ---
 
+**Correction, added September 24, 2026.** This post compares our numbers
+with the wrong figures for Goldwater and colleagues' 2009 model. I quoted
+0.803 and 0.624. The paper's own table gives 0.852 on word boundaries and
+0.723 on whole words for that model. Later models from 2009 to 2014 score
+0.872 and then 0.924 on whole words on the same corpus. So our counting
+method does not beat the published state of the art. It is eight to thirteen
+points behind it. The idea of learning word edges from sentence edges was
+also published before, by Fleck in 2008. The rest of the post stands as a
+record of what I believed that day. The full correction is in the post
+"A leak made our compression result three times too big."
+
 **The short version, if you do not want all of it.**
 
 Counting gets **0.881** on the standard word segmentation benchmark, against 0.803 from a well-known Bayesian model published in 2009. On the stricter whole-word measure it is 0.791 against their 0.624. I could not establish whether better published numbers exist on this corpus, and they probably do. No neural network, no gradients, seconds on a laptop, five-fold cross-validation with everything learned on held-out data.
